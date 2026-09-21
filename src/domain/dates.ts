@@ -50,6 +50,15 @@ export function nomDuJour(jour: number): string {
   return JOURS[jour] ?? '';
 }
 
+/**
+ * Prochain dimanche, ou aujourd'hui si on y est deja.
+ * La preparation de la conversation avec papa est rangee sous cette date.
+ */
+export function prochainDimanche(date: Date = new Date()): ISODate {
+  const jour = date.getDay();
+  return jour === 0 ? jourISO(date) : ajouterJours(jourISO(date), 7 - jour);
+}
+
 /** « Lundi 21 septembre », avec repli si `toLocaleDateString` echoue. */
 export function dateLongue(date: Date = new Date()): string {
   try {

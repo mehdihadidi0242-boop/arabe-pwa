@@ -11,6 +11,7 @@
 import { ecranAujourdhui } from '../screens/aujourdhui';
 import { ecranAPropos } from '../screens/apropos';
 import { ecranAVenir } from '../screens/a-venir';
+import { ecranDarija } from '../screens/darija/index';
 import { el, icone, remplacer } from '../ui/dom';
 import { basculerTheme, themeApplique } from '../ui/theme';
 import type { Ecran } from './ecran';
@@ -66,11 +67,7 @@ function ecranPour(route: Route): Ecran {
         'Sourates, verset mot à mot, mémorisation par masquage et flashcards.',
       );
     case 'darija':
-      return ecranAVenir(
-        'Darija',
-        'Parler avec papa',
-        'Carnet de phrases, enregistrements, « Dis-le à voix haute » et préparation du dimanche.',
-      );
+      return ecranDarija(route.vue);
     case 'suivi':
       return ecranAVenir(
         'Suivi',

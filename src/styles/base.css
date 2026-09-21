@@ -415,6 +415,352 @@ button {
 }
 
 /* ============================================================
+   Onglet Darija
+   ============================================================ */
+
+/* Selecteur segmente des sous-vues */
+.segmente {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-1);
+  padding: var(--space-1);
+  border-radius: 14px;
+  background: var(--surface-2);
+}
+
+.segmente__onglet {
+  min-height: var(--cible);
+  padding-inline: 2px;
+  border: none;
+  border-radius: var(--r-10);
+  background: transparent;
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.segmente__onglet--actif {
+  background: var(--surface);
+  color: var(--ink);
+}
+
+/* Pilules a choix unique */
+.pilules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pilule {
+  min-height: var(--cible);
+  padding-inline: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-pilule);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.pilule--active {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.carnet__barre {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.carnet__barre .pilules {
+  flex-grow: 1;
+}
+
+.bouton-rond {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--cible);
+  height: var(--cible);
+  border: none;
+  border-radius: var(--r-pilule);
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.bouton--large {
+  min-height: 52px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.bouton--compact {
+  min-height: var(--cible);
+  font-size: 14px;
+}
+
+.note--demo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.note--demo .bouton {
+  border-color: var(--warn);
+  color: var(--warn);
+}
+
+/* Carte de phrase */
+.phrase {
+  gap: var(--space-2);
+}
+
+.phrase__entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.phrase__theme {
+  padding: var(--space-1) 10px;
+  border-radius: var(--r-pilule);
+  background: var(--surface-2);
+  color: var(--ink-2);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.phrase__ar {
+  text-align: right;
+}
+
+.phrase__translit {
+  color: var(--ink-2);
+  font-size: 15px;
+  font-style: italic;
+}
+
+.phrase__fr {
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.phrase__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.bouton-texte {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--cible);
+  padding-inline: 10px;
+  border: none;
+  border-radius: var(--r-10);
+  background: transparent;
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.bouton-texte--danger {
+  color: var(--danger);
+}
+
+/* Champs de saisie */
+.champ {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.champ__etiquette {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.saisie {
+  min-height: var(--cible-primaire);
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-12);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 16px;
+}
+
+.saisie--arabe {
+  min-height: 52px;
+  font-size: 24px;
+  text-align: right;
+}
+
+.saisie--zone {
+  padding: var(--space-3) 14px;
+  font-size: 15px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.carte--attente {
+  border-style: dashed;
+  background: transparent;
+}
+
+/* Dis-le a voix haute */
+.oral__entete {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  color: var(--ink-2);
+  font-size: 14px;
+}
+
+.oral__carte {
+  gap: var(--space-4);
+  min-height: 260px;
+  border-radius: var(--r-20);
+  padding: var(--space-6) var(--space-5);
+}
+
+.oral__consigne {
+  color: var(--ink-2);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+}
+
+.oral__invite {
+  font-family: var(--police-titre);
+  font-size: 28px;
+  line-height: 1.25;
+}
+
+.oral__reponse {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--line);
+}
+
+.oral__evals {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.eval {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 60px;
+  padding: var(--space-1);
+  border: 1px solid transparent;
+  border-radius: var(--r-12);
+}
+
+.eval__libelle {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.eval__echeance {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.eval--sait {
+  border-color: var(--accent-soft);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.eval--presque {
+  border-color: var(--warn-soft);
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+
+.eval--revoir {
+  border-color: var(--danger-soft);
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.carte--bilan {
+  gap: var(--space-3);
+  border-radius: var(--r-20);
+  padding: 28px var(--space-5);
+  text-align: center;
+}
+
+.bilan__titre {
+  font-family: var(--police-titre);
+  font-size: 24px;
+}
+
+/* Liste a cases a cocher */
+.liste-cases {
+  gap: 0;
+  padding: var(--space-1) 14px;
+}
+
+.liste-cases__ligne {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 60px;
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.liste-cases__ligne:last-child {
+  border-bottom: none;
+}
+
+.case {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  accent-color: var(--accent);
+}
+
+.liste-cases__texte {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 2px;
+}
+
+.liste-cases__fr {
+  font-size: 15px;
+}
+
+.liste-cases__fr--cochee {
+  text-decoration: line-through;
+  color: var(--ink-2);
+}
+
+.liste-cases__ligne .phrase__translit {
+  font-size: 13px;
+}
+
+.liste-cases__ligne .ar {
+  margin: 0;
+  text-align: right;
+}
+
+/* ============================================================
    Ecrans a venir
    ============================================================ */
 
