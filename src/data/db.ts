@@ -72,7 +72,7 @@ let ouverture: Promise<IDBDatabase> | null = null;
 export function promesse<T>(requete: IDBRequest<T>): Promise<T> {
   return new Promise((resoudre, rejeter) => {
     requete.onsuccess = () => resoudre(requete.result);
-    requete.onerror = () => rejeter(requete.error ?? new Error('Requete IndexedDB en echec'));
+    requete.onerror = () => rejeter(requete.error ?? new Error('Requête IndexedDB en échec'));
   });
 }
 
@@ -102,9 +102,9 @@ export function ouvrirDb(): Promise<IDBDatabase> {
       resoudre(db);
     };
 
-    requete.onerror = () => rejeter(requete.error ?? new Error('Ouverture de la base en echec'));
+    requete.onerror = () => rejeter(requete.error ?? new Error('Ouverture de la base en échec'));
     requete.onblocked = () =>
-      rejeter(new Error('Une autre fenetre de l’application bloque la mise a jour de la base.'));
+      rejeter(new Error('Une autre fenêtre de l’application bloque la mise à jour de la base.'));
   }).finally(() => {
     ouverture = null;
   });
@@ -129,8 +129,8 @@ async function transaction<T>(
   const resultat = await travail(tx);
   return new Promise<T>((resoudre, rejeter) => {
     tx.oncomplete = () => resoudre(resultat);
-    tx.onerror = () => rejeter(tx.error ?? new Error('Transaction en echec'));
-    tx.onabort = () => rejeter(tx.error ?? new Error('Transaction annulee'));
+    tx.onerror = () => rejeter(tx.error ?? new Error('Transaction en échec'));
+    tx.onabort = () => rejeter(tx.error ?? new Error('Transaction annulée'));
   });
 }
 

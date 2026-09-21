@@ -80,7 +80,7 @@ export function ecranAujourdhui(): Ecran {
     const apres = transformer(avant, maintenant);
     seance = await enregistrerBloc(seance, apres);
     if (avant.status !== 'done' && apres.status === 'done') {
-      afficherBandeau(`Bloc « ${definition.title} » termine.`);
+      afficherBandeau(`Bloc « ${definition.title} » terminé.`);
     }
     rafraichir();
   }
@@ -213,7 +213,7 @@ export function ecranAujourdhui(): Ecran {
         el(
           'div',
           { class: 'recap__ligne' },
-          el('div', { class: 'recap__titre', text: `Seance de ${totalPrevu} min` }),
+          el('div', { class: 'recap__titre', text: `Séance de ${totalPrevu} min` }),
           recapCompteur,
         ),
         recapJaugeRacine,
@@ -226,7 +226,7 @@ export function ecranAujourdhui(): Ecran {
         racine,
         el(
           'section',
-          { class: 'ecran', 'aria-label': 'Seance du jour' },
+          { class: 'ecran', 'aria-label': 'Séance du jour' },
           recap,
           ...vues.map((vue) => vue.carte),
           el('p', {

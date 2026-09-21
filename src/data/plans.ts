@@ -14,7 +14,7 @@ export const PLANS: Record<PlanId, readonly DefinitionBloc[]> = {
     {
       key: 'flash',
       title: 'Flashcards de vocabulaire coranique',
-      desc: 'Revision espacee des mots du jour.',
+      desc: 'Révision espacée des mots du jour.',
       plannedMin: 10,
       cat: 'flash',
       go: { onglet: 'coran', vue: 'cartes' },
@@ -22,7 +22,7 @@ export const PLANS: Record<PlanId, readonly DefinitionBloc[]> = {
     {
       key: 'verset',
       title: "Analyse d'un verset",
-      desc: 'Mot a mot, racines et sens.',
+      desc: 'Mot à mot, racines et sens.',
       plannedMin: 10,
       cat: 'verset',
       go: { onglet: 'coran', vue: 'verset' },
@@ -30,7 +30,7 @@ export const PLANS: Record<PlanId, readonly DefinitionBloc[]> = {
     {
       key: 'oral',
       title: 'Darija orale',
-      desc: '« Dis-le a voix haute » sur le carnet.',
+      desc: '« Dis-le à voix haute » sur le carnet.',
       plannedMin: 10,
       cat: 'oral',
       go: { onglet: 'darija', vue: 'oral' },
@@ -40,15 +40,15 @@ export const PLANS: Record<PlanId, readonly DefinitionBloc[]> = {
     {
       key: 'flash',
       title: 'Flashcards de vocabulaire coranique',
-      desc: 'Revision espacee, seance longue.',
+      desc: 'Révision espacée, séance longue.',
       plannedMin: 15,
       cat: 'flash',
       go: { onglet: 'coran', vue: 'cartes' },
     },
     {
       key: 'sourate',
-      title: 'Sourate a apprendre',
-      desc: 'Comprendre le sens, puis memoriser par masquage.',
+      title: 'Sourate à apprendre',
+      desc: 'Comprendre le sens, puis mémoriser par masquage.',
       plannedMin: 30,
       cat: 'sourate',
       go: { onglet: 'coran', vue: 'memo' },
@@ -56,7 +56,7 @@ export const PLANS: Record<PlanId, readonly DefinitionBloc[]> = {
     {
       key: 'relecture',
       title: 'Relecture du carnet de phrases',
-      desc: 'Ecouter et relire les phrases de papa.',
+      desc: 'Écouter et relire les phrases de papa.',
       plannedMin: 15,
       cat: 'papa',
       go: { onglet: 'darija', vue: 'carnet' },
@@ -65,8 +65,8 @@ export const PLANS: Record<PlanId, readonly DefinitionBloc[]> = {
   dimanche: [
     {
       key: 'recit',
-      title: 'Recitation avec le sens',
-      desc: 'Reciter en gardant le sens de chaque verset en tete.',
+      title: 'Récitation avec le sens',
+      desc: 'Réciter en gardant le sens de chaque verset en tête.',
       plannedMin: 20,
       cat: 'sourate',
       go: { onglet: 'coran', vue: 'memo' },
@@ -74,7 +74,7 @@ export const PLANS: Record<PlanId, readonly DefinitionBloc[]> = {
     {
       key: 'conv',
       title: 'Conversation en darija avec papa',
-      desc: 'Utiliser les phrases preparees, noter ses corrections.',
+      desc: 'Utiliser les phrases préparées, noter ses corrections.',
       plannedMin: 40,
       cat: 'papa',
       go: { onglet: 'darija', vue: 'dimanche' },
@@ -87,7 +87,7 @@ export const LIBELLES_CATEGORIES = {
   flash: 'Flashcards coraniques',
   verset: 'Analyse de verset',
   oral: 'Darija orale',
-  sourate: 'Sourate et recitation',
+  sourate: 'Sourate et récitation',
   papa: 'Carnet et conversation',
 } as const;
 
