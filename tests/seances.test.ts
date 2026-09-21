@@ -25,7 +25,7 @@ describe('creation', () => {
   it('cree la seance du jour a partir du plan et la conserve', async () => {
     const seance = await seanceDuJour(LUNDI, T0);
     expect(seance.plan).toBe('semaine');
-    expect(seance.blocks.map((b) => b.key)).toEqual(['flash', 'verset', 'oral']);
+    expect(seance.blocks.map((b) => b.key)).toEqual(['lecon', 'revision', 'voix']);
     expect(seance.blocks.every((b) => b.status === 'todo')).toBe(true);
 
     const relue = await lire<Session>('sessions', LUNDI);
@@ -35,7 +35,10 @@ describe('creation', () => {
   it('choisit le bon plan le samedi et le dimanche', async () => {
     expect((await seanceDuJour(SAMEDI, T0)).plan).toBe('samedi');
     expect((await seanceDuJour(DIMANCHE, T0)).plan).toBe('dimanche');
-    expect((await seanceDuJour(DIMANCHE, T0)).blocks.map((b) => b.key)).toEqual(['recit', 'conv']);
+    expect((await seanceDuJour(DIMANCHE, T0)).blocks.map((b) => b.key)).toEqual([
+      'revision',
+      'atelier',
+    ]);
   });
 
   it('relit la seance existante sans ecraser les minutes deja faites', async () => {

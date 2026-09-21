@@ -46,7 +46,7 @@ describe('integrite des definitions', () => {
       for (const bloc of blocs) {
         expect(bloc.title.length).toBeGreaterThan(0);
         expect(bloc.desc.length).toBeGreaterThan(0);
-        expect(['coran', 'darija']).toContain(bloc.go.onglet);
+        expect(['lecon', 'darija']).toContain(bloc.go.onglet);
         expect(bloc.go.vue.length).toBeGreaterThan(0);
       }
     }

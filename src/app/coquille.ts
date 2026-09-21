@@ -34,7 +34,7 @@ const ICONES: Record<string, string[]> = {
   ],
   lune: ['M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z'],
   aujourdhui: ['M6 5h12a2.5 2.5 0 0 1 2.5 2.5v11A2.5 2.5 0 0 1 18 21H6a2.5 2.5 0 0 1-2.5-2.5v-11A2.5 2.5 0 0 1 6 5z', 'M3.5 10h17M8 3v4M16 3v4'],
-  coran: [
+  lecon: [
     'M12 6.5C10 5 7 4.5 3.5 4.5v14c3.5 0 6.5.5 8.5 2 2-1.5 5-2 8.5-2v-14c-3.5 0-6.5.5-8.5 2z',
     'M12 6.5v14',
   ],
@@ -50,7 +50,7 @@ interface DefinitionOnglet {
 
 const ONGLETS: DefinitionOnglet[] = [
   { id: 'aujourdhui', libelle: "Aujourd'hui", icone: ICONES.aujourdhui ?? [] },
-  { id: 'coran', libelle: 'Coran', icone: ICONES.coran ?? [] },
+  { id: 'lecon', libelle: 'Leçon', icone: ICONES.lecon ?? [] },
   { id: 'darija', libelle: 'Darija', icone: ICONES.darija ?? [] },
   { id: 'suivi', libelle: 'Suivi', icone: ICONES.suivi ?? [] },
 ];
@@ -60,11 +60,12 @@ function ecranPour(route: Route): Ecran {
   switch (route.onglet) {
     case 'aujourdhui':
       return ecranAujourdhui();
-    case 'coran':
+    case 'lecon':
       return ecranAVenir(
-        'Coran',
-        'Comprendre le sens pour mieux mémoriser',
-        'Sourates, verset mot à mot, mémorisation par masquage et flashcards.',
+        'Leçon',
+        'Arabe standard',
+        'Leçons de grammaire et exercices corrigés : conjugaison, adjectifs, ' +
+          'constructions de phrases et connecteurs logiques.',
       );
     case 'darija':
       return ecranDarija(route.vue);

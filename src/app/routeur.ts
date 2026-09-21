@@ -7,14 +7,14 @@
  * du service worker.
  */
 
-export type Onglet = 'aujourdhui' | 'coran' | 'darija' | 'suivi' | 'apropos';
+export type Onglet = 'aujourdhui' | 'lecon' | 'darija' | 'suivi' | 'apropos';
 
 export interface Route {
   onglet: Onglet;
   vue: string | null;
 }
 
-const ONGLETS: readonly Onglet[] = ['aujourdhui', 'coran', 'darija', 'suivi', 'apropos'];
+const ONGLETS: readonly Onglet[] = ['aujourdhui', 'lecon', 'darija', 'suivi', 'apropos'];
 
 const CLE_DERNIER_ONGLET = 'arabe.onglet';
 

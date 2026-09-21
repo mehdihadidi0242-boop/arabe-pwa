@@ -132,11 +132,11 @@ export type PlanId = 'semaine' | 'samedi' | 'dimanche';
 export type StatutBloc = 'todo' | 'doing' | 'done';
 
 /** Categorie utilisee par l'ecran Suivi pour regrouper les minutes. */
-export type CategorieBloc = 'flash' | 'verset' | 'oral' | 'sourate' | 'papa';
+export type CategorieBloc = 'lecon' | 'revision' | 'voix' | 'atelier';
 
 /** Destination du bouton « Ouvrir » d'un bloc. */
 export interface Destination {
-  onglet: 'coran' | 'darija';
+  onglet: 'lecon' | 'darija';
   vue: string;
 }
 
