@@ -1,0 +1,88 @@
+/*
+ * Design tokens repris a l'identique de la planche « Ecrans et design tokens ».
+ * Ambiance papier et encre : fond chaud, vert profond pour l'action,
+ * ocre pour ce qui est en cours. Tous les couples texte/fond passent AA.
+ */
+
+:root {
+  /* Couleurs — theme clair (valeurs par defaut) */
+  --bg: #f6f3ec;
+  --surface: #fffdf8;
+  --surface-2: #eeeae0;
+  --line: #dad3c4;
+  --ink: #1e211f; /* 14,7:1 sur --bg */
+  --ink-2: #565c57; /* 6,2:1 */
+  --accent: #1f5c4f; /* 7,0:1 */
+  --accent-soft: #dceae3;
+  --on-accent: #ffffff;
+  --warn: #865712; /* 5,1:1 sur --warn-soft */
+  --warn-soft: #f4e7d0;
+  --danger: #a2372a; /* 5,2:1 sur --danger-soft */
+  --danger-soft: #f6ddd7;
+  --scrim: rgb(30 33 31 / 45%);
+
+  /* Espacements */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Rayons */
+  --r-10: 10px;
+  --r-12: 12px;
+  --r-16: 16px;
+  --r-20: 20px;
+  --r-pilule: 999px;
+
+  /* Typographie */
+  --police-ui: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
+  --police-titre: 'Newsreader', Georgia, serif;
+  --police-arabe: 'Amiri', 'Noto Naskh Arabic', serif;
+
+  /* Cible tactile minimale */
+  --cible: 44px;
+  --cible-primaire: 48px;
+
+  /* Gouttiere d'ecran */
+  --gouttiere: 16px;
+}
+
+/* Theme sombre : suit le systeme, sauf choix manuel memorise. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #141816;
+    --surface: #1c211e;
+    --surface-2: #262c28;
+    --line: #343b36;
+    --ink: #eceae3; /* 14,9:1 */
+    --ink-2: #a9afa8; /* 8,0:1 */
+    --accent: #7cc4ae; /* 8,8:1 */
+    --accent-soft: #1f3831;
+    --on-accent: #10231d;
+    --warn: #e0b266; /* 6,8:1 */
+    --warn-soft: #3a2e18;
+    --danger: #f08a78; /* 5,9:1 */
+    --danger-soft: #3f221c;
+    --scrim: rgb(0 0 0 / 55%);
+  }
+}
+
+:root[data-theme='dark'] {
+  --bg: #141816;
+  --surface: #1c211e;
+  --surface-2: #262c28;
+  --line: #343b36;
+  --ink: #eceae3;
+  --ink-2: #a9afa8;
+  --accent: #7cc4ae;
+  --accent-soft: #1f3831;
+  --on-accent: #10231d;
+  --warn: #e0b266;
+  --warn-soft: #3a2e18;
+  --danger: #f08a78;
+  --danger-soft: #3f221c;
+  --scrim: rgb(0 0 0 / 55%);
+}

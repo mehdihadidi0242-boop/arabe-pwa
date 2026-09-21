@@ -1,0 +1,430 @@
+@import './tokens.css';
+@import './fonts.css';
+
+/* ============================================================
+   Base
+   ============================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--police-ui);
+  font-size: 15px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: none;
+}
+
+h1,
+h2,
+h3,
+p,
+figure {
+  margin: 0;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+:where(button, a, input, textarea, select, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--r-10);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.chargement {
+  padding: var(--space-8);
+  color: var(--ink-2);
+  text-align: center;
+}
+
+/* Visible uniquement pour les lecteurs d'ecran. */
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ============================================================
+   Coquille : en-tete, contenu, navigation
+   ============================================================ */
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  max-width: 560px;
+  margin-inline: auto;
+  background: var(--bg);
+}
+
+.entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--gouttiere) var(--space-3) var(--space-5);
+  padding-top: max(var(--space-4), env(safe-area-inset-top));
+}
+
+.entete__titre {
+  font-family: var(--police-titre);
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: -0.3px;
+  line-height: 1.1;
+}
+
+.entete__sous-titre {
+  font-size: 14px;
+  color: var(--ink-2);
+}
+
+.contenu {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: var(--space-1) var(--gouttiere) 28px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.nav {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-1);
+  padding: 6px var(--space-2) 20px;
+  padding-bottom: max(20px, env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.nav__onglet {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  min-height: 56px;
+  border: none;
+  border-radius: var(--r-12);
+  background: transparent;
+  color: var(--ink-2);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.nav__onglet[aria-current='page'] {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* ============================================================
+   Composants de base
+   ============================================================ */
+
+.carte {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-16);
+  background: var(--surface);
+}
+
+.carte--attention {
+  border-color: var(--warn);
+}
+
+.carte--fait {
+  border-color: var(--line);
+}
+
+.bouton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--cible-primaire);
+  padding-inline: var(--space-5);
+  border: none;
+  border-radius: var(--r-12);
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.bouton--secondaire {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+}
+
+.bouton--fantome {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--accent);
+}
+
+.bouton[disabled] {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.icone-bouton {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--cible);
+  height: var(--cible);
+  border: 1px solid var(--line);
+  border-radius: var(--r-pilule);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.pastille {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-3) 14px;
+  border: none;
+  border-radius: var(--r-pilule);
+  background: var(--surface-2);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.pastille--en-cours {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+
+.pastille--fait {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.emplacement-import {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: 28px var(--space-5);
+  border: 2px dashed var(--warn);
+  border-radius: var(--r-16);
+  background: var(--warn-soft);
+  text-align: center;
+}
+
+.emplacement-import__titre {
+  color: var(--warn);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.note {
+  color: var(--ink-2);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.note--demo {
+  padding: 10px var(--space-3);
+  border-radius: var(--r-12);
+  background: var(--warn-soft);
+  color: var(--warn);
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+/* Barres de progression */
+.jauge {
+  height: 8px;
+  overflow: hidden;
+  border-radius: var(--r-pilule);
+  background: var(--surface-2);
+}
+
+.jauge--fine {
+  height: 6px;
+}
+
+.jauge__remplissage {
+  height: 100%;
+  border-radius: var(--r-pilule);
+  background: var(--accent);
+}
+
+/* Texte arabe */
+.ar {
+  font-family: var(--police-arabe);
+  /* Interligne large : les signes diacritiques du texte uthmani debordent. */
+  line-height: 1.9;
+}
+
+/* ============================================================
+   Ecran « Aujourd'hui »
+   ============================================================ */
+
+.ecran {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.recap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-16);
+  background: var(--surface);
+}
+
+.recap__ligne {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.recap__titre {
+  font-family: var(--police-titre);
+  font-size: 21px;
+  font-weight: 500;
+}
+
+.recap__compteur {
+  font-size: 15px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.bloc__entete {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.bloc__meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.bloc__numero {
+  color: var(--ink-2);
+  font-size: 13px;
+}
+
+.bloc__titre {
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.bloc__description {
+  color: var(--ink-2);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.bloc__minuteur {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.minuteur {
+  min-width: 100px;
+  font-size: 34px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.5px;
+}
+
+.bloc__actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.bloc__actions .bouton {
+  min-height: var(--cible);
+  padding-inline: var(--space-2);
+}
+
+/* ============================================================
+   Bandeau d'information (toast)
+   ============================================================ */
+
+.bandeau {
+  position: fixed;
+  right: var(--gouttiere);
+  bottom: 100px;
+  left: var(--gouttiere);
+  max-width: 528px;
+  margin-inline: auto;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--r-12);
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* ============================================================
+   Ecrans a venir
+   ============================================================ */
+
+.a-venir {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-8) var(--space-5);
+  border: 1px dashed var(--line);
+  border-radius: var(--r-16);
+  color: var(--ink-2);
+  text-align: center;
+}

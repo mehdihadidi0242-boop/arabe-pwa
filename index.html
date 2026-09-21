@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#F6F3EC" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#141816" media="(prefers-color-scheme: dark)" />
+    <meta
+      name="description"
+      content="Application locale pour comprendre le sens des sourates et parler la darija."
+    />
+    <title>Arabe</title>
+    <script>
+      // Applique le theme memorise avant le premier rendu, pour eviter le flash clair.
+      try {
+        var t = localStorage.getItem('arabe.theme');
+        if (t === 'clair' || t === 'sombre') {
+          document.documentElement.dataset.theme = t === 'sombre' ? 'dark' : 'light';
+        }
+      } catch (e) {
+        /* stockage indisponible : on garde prefers-color-scheme */
+      }
+    </script>
+  </head>
+  <body>
+    <div id="app" aria-busy="true">
+      <p class="chargement">Chargement&nbsp;…</p>
+    </div>
+    <noscript>
+      Cette application a besoin de JavaScript. Active-le puis recharge la page.
+    </noscript>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
