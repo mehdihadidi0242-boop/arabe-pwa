@@ -1146,6 +1146,58 @@ button {
 }
 
 /* ============================================================
+   Sauvegarde
+   ============================================================ */
+
+.sauvegarde__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.apercu {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--accent);
+  border-radius: var(--r-12);
+  background: var(--accent-soft);
+}
+
+.apercu--erreur {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.apercu__titre {
+  color: var(--accent);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.apercu--erreur .apercu__titre {
+  color: var(--danger);
+}
+
+.apercu .tableau-enveloppe {
+  background: var(--surface);
+}
+
+.apercu .tableau td:not(:first-child),
+.apercu .tableau th:not(:first-child) {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.lien {
+  color: var(--accent);
+  font-size: 13px;
+  word-break: break-all;
+}
+
+/* ============================================================
    Clavier arabe integre
    ============================================================ */
 
