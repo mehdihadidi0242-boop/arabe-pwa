@@ -1146,6 +1146,160 @@ button {
 }
 
 /* ============================================================
+   Ecran Suivi
+   ============================================================ */
+
+.chiffres {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.chiffre {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-16);
+  background: var(--surface);
+}
+
+.chiffre__etiquette {
+  color: var(--ink-2);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.chiffre__valeur {
+  font-family: var(--police-titre);
+  font-size: 26px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.chiffre__detail {
+  color: var(--ink-2);
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+/* Graphique des minutes par jour */
+.graphique {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--space-2);
+  align-items: end;
+}
+
+.graphique__colonne {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.graphique__valeur {
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.graphique__valeur--pale {
+  color: var(--ink-2);
+}
+
+.graphique__zone {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+}
+
+.graphique__objectif {
+  position: absolute;
+  right: -2px;
+  left: -2px;
+  height: 2px;
+  background: var(--ink-2);
+  opacity: 0.55;
+}
+
+.graphique__barre {
+  width: 100%;
+  border-radius: 6px 6px 2px 2px;
+  background: var(--accent);
+}
+
+.graphique__barre--aujourdhui {
+  background: var(--warn);
+}
+
+.graphique__barre--a-venir {
+  border: 1px dashed var(--line);
+  background: transparent;
+}
+
+.graphique__jour {
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.graphique__jour--actif {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+/* Minutes par bloc */
+.categorie {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.categorie__ligne {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  font-size: 14px;
+}
+
+.categorie__chiffres {
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Progression sur le programme */
+.progression {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.progression__texte {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+/* Bilan */
+.bilan__ligne {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 14px;
+}
+
+.bilan__valeur {
+  font-weight: 600;
+  text-align: end;
+}
+
+/* ============================================================
    Sauvegarde
    ============================================================ */
 

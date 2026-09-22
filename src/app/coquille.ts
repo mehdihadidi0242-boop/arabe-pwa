@@ -10,9 +10,9 @@
 
 import { ecranAujourdhui } from '../screens/aujourdhui';
 import { ecranAPropos } from '../screens/apropos';
-import { ecranAVenir } from '../screens/a-venir';
 import { ecranDarija } from '../screens/darija/index';
 import { ecranLecon } from '../screens/lecon/index';
+import { ecranSuivi } from '../screens/suivi';
 import { el, icone, remplacer } from '../ui/dom';
 import { basculerTheme, themeApplique } from '../ui/theme';
 import type { Ecran } from './ecran';
@@ -66,11 +66,7 @@ function ecranPour(route: Route): Ecran {
     case 'darija':
       return ecranDarija(route.vue);
     case 'suivi':
-      return ecranAVenir(
-        'Suivi',
-        'Semaine en cours',
-        'Minutes par jour et par bloc, série, couverture du sens et bilan hebdomadaire.',
-      );
+      return ecranSuivi();
     case 'apropos':
       return ecranAPropos();
   }
