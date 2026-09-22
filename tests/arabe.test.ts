@@ -224,6 +224,37 @@ describe('explication de l’ecart', () => {
   });
 });
 
+describe('ordre de frappe des signes', () => {
+  // Sur un mot comme مُعَلِّم, on peut taper la shadda avant la kasra ou
+  // l'inverse : le mot est le meme, la suite de codets non. Refuser l'une des
+  // deux graphies serait incomprehensible pour qui ecrit avec le clavier
+  // integre, ou avec n'importe quel clavier arabe.
+  const shaddaPuisKasra = 'لِّ'; // lam + shadda + kasra
+  const kasraPuisShadda = 'لِّ'; // lam + kasra + shadda
+
+  it('accepte les deux ordres, meme en mode strict', () => {
+    expect(shaddaPuisKasra).not.toBe(kasraPuisShadda);
+    expect(memeReponse(shaddaPuisKasra, kasraPuisShadda, 'stricte')).toBe(true);
+  });
+
+  it('les ramene a la meme forme normalisee', () => {
+    expect(normaliserArabe(shaddaPuisKasra, 'stricte')).toBe(
+      normaliserArabe(kasraPuisShadda, 'stricte'),
+    );
+  });
+
+  it('vaut pour un mot entier tape dans les deux sens', () => {
+    const a = 'مُعَلِّم'; // tel qu'ecrit dans la lecon
+    const b = 'مُعَل' + 'ِّ' + 'م'; // shadda avant kasra
+    expect(memeReponse(a, b, 'stricte')).toBe(true);
+    expect(memeReponse(a, b, 'souple')).toBe(true);
+  });
+
+  it('ne confond pas pour autant deux signes differents', () => {
+    expect(memeReponse('لِّ', 'لُّ', 'stricte')).toBe(false);
+  });
+});
+
 describe('distance d’edition', () => {
   it('vaut zero pour deux reponses equivalentes', () => {
     expect(distance('كتاب', 'كتاب', 'souple')).toBe(0);

@@ -9,6 +9,7 @@
 import { naviguer } from '../../app/routeur';
 import { ajouterPhrase, validerSaisie, type SaisiePhrase } from '../../data/phrases';
 import { THEMES } from '../../data/phrases-demo';
+import { champArabe } from '../../ui/champ-arabe';
 import { el, remplacer } from '../../ui/dom';
 import { choixPilules } from './commun';
 import type { ContexteDarija } from './commun';
@@ -52,9 +53,20 @@ export function vueAjout(racine: HTMLElement, ctx: ContexteDarija): void {
 
   remplacer(
     racine,
-    champ('Phrase en arabe', 'اكتب الجملة هنا', (valeur) => (saisie.ar = valeur), {
-      arabe: true,
-    }),
+    el(
+      'div',
+      { class: 'champ' },
+      el('span', { class: 'champ__etiquette', text: 'Phrase en arabe' }),
+      champArabe({
+        placeholder: 'اكتب الجملة هنا',
+        // Les phrases de darija se notent sans vocalisation.
+        voyelles: false,
+        deplie: false,
+        surSaisie: (valeur) => {
+          saisie.ar = valeur;
+        },
+      }).element,
+    ),
     champ('Transcription latine', 'ex. wach rak ?', (valeur) => (saisie.translit = valeur)),
     champ('Français', 'ex. Comment tu vas ?', (valeur) => (saisie.fr = valeur)),
     el('div', { class: 'champ' }, el('span', { class: 'champ__etiquette', text: 'Thème' }), themes),
@@ -74,22 +86,18 @@ export function vueAjout(racine: HTMLElement, ctx: ContexteDarija): void {
   );
 }
 
-interface OptionsChamp {
-  arabe?: boolean;
-}
-
+/** Champ texte simple. L'arabe passe par `champArabe`, avec son clavier. */
 function champ(
   etiquette: string,
   exemple: string,
   auChangement: (valeur: string) => void,
-  options: OptionsChamp = {},
 ): HTMLElement {
   const entree = el('input', {
     type: 'text',
-    class: options.arabe ? 'saisie saisie--arabe ar' : 'saisie',
+    class: 'saisie',
     placeholder: exemple,
-    dir: options.arabe ? 'rtl' : 'ltr',
-    lang: options.arabe ? 'ar' : 'fr',
+    dir: 'ltr',
+    lang: 'fr',
     onInput: (evenement: Event) => {
       auChangement((evenement.target as HTMLInputElement).value);
     },

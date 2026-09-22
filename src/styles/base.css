@@ -1138,11 +1138,112 @@ button {
 }
 
 .saisie--atelier {
-  min-height: 220px;
+  min-height: 180px;
   font-family: var(--police-arabe);
   font-size: 22px;
-  line-height: 2;
+  line-height: 1.9;
   text-align: right;
+}
+
+/* ============================================================
+   Clavier arabe integre
+   ============================================================ */
+
+.champ-arabe {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.clavier-bascule {
+  align-self: flex-start;
+  color: var(--accent);
+}
+
+.clavier {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: var(--space-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-12);
+  background: var(--surface-2);
+}
+
+.clavier__rangee {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.clavier__touche {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--cible);
+  padding: 0 2px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-10);
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--police-arabe);
+  font-size: 24px;
+  line-height: 1;
+}
+
+.clavier__touche:active {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.clavier__voyelles {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 6px;
+  border-top: 1px solid var(--line);
+}
+
+.clavier__etiquette {
+  color: var(--ink-2);
+  font-family: var(--police-ui);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.clavier__rangee--variantes,
+.clavier__voyelles .clavier__rangee {
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+}
+
+.clavier__rangee--variantes {
+  padding-top: 6px;
+  border-top: 1px solid var(--line);
+}
+
+.clavier__rangee--variantes .clavier__touche {
+  font-size: 21px;
+}
+
+.clavier__touche--voyelle {
+  background: var(--surface-2);
+  font-size: 22px;
+}
+
+.clavier__rangee--controles {
+  grid-template-columns: 1fr auto;
+  padding-top: 6px;
+  border-top: 1px solid var(--line);
+}
+
+.clavier__touche--espace {
+  font-family: var(--police-ui);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.clavier__touche--retour {
+  min-width: 64px;
 }
 
 /* ============================================================

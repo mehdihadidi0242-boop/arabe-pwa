@@ -9,6 +9,7 @@
 
 import { atelierDu, enregistrerAtelier, leconsAbordees } from '../../data/progres';
 import { jourISO } from '../../domain/dates';
+import { champArabe } from '../../ui/champ-arabe';
 import { el, remplacer } from '../../ui/dom';
 import { messageVide } from '../darija/commun';
 import type { ContexteLecon } from './commun';
@@ -64,20 +65,23 @@ export async function vueAtelier(racine: HTMLElement, ctx: ContexteLecon): Promi
         ),
       ),
       el(
-        'label',
+        'div',
         { class: 'champ' },
         el('span', { class: 'champ__etiquette', text: 'Ton texte' }),
-        el('textarea', {
-          class: 'saisie saisie--zone saisie--atelier ar',
-          dir: 'rtl',
-          lang: 'ar',
-          rows: '10',
+        champArabe({
+          multiligne: true,
+          // Six lignes : au-dela, le clavier integre sort de l'ecran sur un
+          // telephone et devient inatteignable sans faire defiler.
+          lignes: 6,
+          classe: 'saisie--atelier',
           placeholder: 'اكتب هنا',
-          value: texte,
-          onInput: (evenement: Event) => {
-            texte = (evenement.target as HTMLTextAreaElement).value;
+          valeur: texte,
+          // L'atelier est de la production libre : on ecrit sans vocaliser.
+          deplie: false,
+          surSaisie: (valeur) => {
+            texte = valeur;
           },
-        }),
+        }).element,
       ),
       el('button', {
         type: 'button',

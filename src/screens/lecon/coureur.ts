@@ -18,12 +18,14 @@ import {
   decouperTrou,
   melangerStable,
   type Exercice,
+  type ExerciceSaisie,
   type Reponse,
   type Resultat,
 } from '../../domain/exercices';
-import { contientArabe } from '../../domain/arabe';
+import { contientArabe, type Tolerance } from '../../domain/arabe';
 import { formaterIntervalle, intervalleSi } from '../../domain/sm2';
 import type { Card, Note } from '../../domain/types';
+import { champArabe, type ChampArabe } from '../../ui/champ-arabe';
 import { el, remplacer } from '../../ui/dom';
 
 export interface OptionsCoureur {
@@ -53,6 +55,15 @@ const NOTES_JUSTES: readonly NoteProposee[] = [
   { note: 'easy', libelle: 'Facile', classe: 'eval--sait' },
 ];
 
+/** Ce que la correction exigera, annonce avant de repondre. */
+const EXIGENCE: Record<Tolerance, string> = {
+  consonnes:
+    'Les voyelles brèves ne sont pas nécessaires : seules les lettres comptent.',
+  souple:
+    'Les voyelles brèves ne sont pas nécessaires, mais la shadda (ّ) compte : elle fait partie du mot.',
+  stricte: 'Cet exercice porte sur les voyelles brèves : écris-les.',
+};
+
 export function monterCoureur(racine: HTMLElement, options: OptionsCoureur): void {
   const aujourdhui = jourISO();
   let file = [...options.exercices];
@@ -70,6 +81,9 @@ export function monterCoureur(racine: HTMLElement, options: OptionsCoureur): voi
    * sinon il reste grise alors que la reponse est ecrite.
    */
   let boutonValider: HTMLButtonElement | null = null;
+
+  /** Champ arabe en cours, a detacher avant de redessiner. */
+  let champArabeCourant: ChampArabe | null = null;
 
   function reponseVide(): boolean {
     if (typeof reponse === 'string') return reponse.trim() === '';
@@ -129,6 +143,8 @@ export function monterCoureur(racine: HTMLElement, options: OptionsCoureur): voi
     if (!exercice) return;
 
     boutonValider = null;
+    champArabeCourant?.detacher();
+    champArabeCourant = null;
     remplacer(
       racine,
       el(
@@ -204,14 +220,15 @@ export function monterCoureur(racine: HTMLElement, options: OptionsCoureur): voi
       case 'saisie':
       case 'trou': {
         const attendu = exercice.reponses[0] ?? '';
-        const arabe = contientArabe(attendu);
+        if (contientArabe(attendu)) return champArabeExercice(exercice);
+
         const champ = el('input', {
           type: 'text',
-          class: arabe ? 'saisie saisie--arabe ar' : 'saisie',
-          dir: arabe ? 'rtl' : 'ltr',
-          lang: arabe ? 'ar' : 'fr',
+          class: 'saisie',
+          dir: 'ltr',
+          lang: 'fr',
           value: typeof reponse === 'string' ? reponse : '',
-          placeholder: arabe ? 'اكتب هنا' : 'Écris ici',
+          placeholder: 'Écris ici',
           autocomplete: 'off',
           autocapitalize: 'off',
           spellcheck: 'false',
@@ -223,11 +240,40 @@ export function monterCoureur(racine: HTMLElement, options: OptionsCoureur): voi
             if (evenement.key === 'Enter' && !reponseVide()) void verifier();
           },
         });
-        // Le champ est recree a chaque dessin : on lui rend le focus.
         queueMicrotask(() => champ.focus());
         return champ;
       }
     }
+  }
+
+  /**
+   * Champ arabe d'un exercice, clavier integre compris, precede de ce que la
+   * correction attendra vraiment.
+   *
+   * Dire le niveau d'exigence avant de repondre evite le sentiment d'arbitraire :
+   * on sait si les voyelles breves comptent, au lieu de le decouvrir sur un refus.
+   */
+  function champArabeExercice(exercice: ExerciceSaisie): HTMLElement {
+    const champ = champArabe({
+      valeur: typeof reponse === 'string' ? reponse : '',
+      placeholder: 'اكتب هنا',
+      voyelles: exercice.tolerance !== 'consonnes',
+      surSaisie: (valeur) => {
+        reponse = valeur;
+        majValidation();
+      },
+      surEntree: () => {
+        if (!reponseVide()) void verifier();
+      },
+    });
+    champArabeCourant = champ;
+
+    return el(
+      'div',
+      { class: 'champ' },
+      champ.element,
+      el('p', { class: 'note', text: EXIGENCE[exercice.tolerance] }),
+    );
   }
 
   function zoneOrdre(segments: readonly string[], graine: string): HTMLElement {
