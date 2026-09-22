@@ -16,6 +16,8 @@ describe('structure du programme', () => {
     const ordres = LECONS.map((l) => l.ordre);
     expect(new Set(ordres).size).toBe(ordres.length);
     expect([...ordres].sort((a, b) => a - b)).toEqual(ordres);
+    // Suite contigue depuis 1 : c'est elle qu'affiche « leçon 3 sur 8 ».
+    expect(ordres).toEqual(ordres.map((_, i) => i + 1));
   });
 
   it('donne un identifiant unique a chaque lecon', () => {
@@ -43,9 +45,45 @@ describe('integrite des exercices', () => {
     expect(new Set(ids).size).toBe(ids.length);
   });
 
+  it('rattache chaque exercice a la lecon qui le contient', () => {
+    // Les fichiers de lecon se ressemblent beaucoup : oublier de changer le
+    // champ `lecon` en partant du precedent enverrait les exercices dans la
+    // mauvaise lecon, sans rien casser de visible.
+    for (const lecon of LECONS) {
+      for (const exercice of lecon.exercices) {
+        expect(exercice.lecon, `${lecon.id} / ${exercice.id}`).toBe(lecon.id);
+      }
+    }
+  });
+
   it('rattache chaque exercice a une lecon existante', () => {
     for (const exercice of exercices) {
       expect(leconParId(exercice.lecon)).toBeDefined();
+    }
+  });
+
+  it('donne a chaque lecon de quoi travailler', () => {
+    for (const lecon of LECONS) {
+      expect(lecon.exercices.length, lecon.id).toBeGreaterThanOrEqual(6);
+    }
+  });
+
+  it('varie les types d’exercices a l’interieur d’une lecon', () => {
+    // Huit questions a choix multiple d'affilee n'apprennent pas a ecrire.
+    for (const lecon of LECONS) {
+      const types = new Set(lecon.exercices.map((e) => e.type));
+      expect(types.size, `${lecon.id} : ${[...types].join(', ')}`).toBeGreaterThanOrEqual(3);
+    }
+  });
+
+  it('fait ecrire de l’arabe dans chaque lecon', () => {
+    for (const lecon of LECONS) {
+      const production = lecon.exercices.some(
+        (e) =>
+          (e.type === 'saisie' || e.type === 'trou') &&
+          e.reponses.some((r) => contientArabe(r)),
+      );
+      expect(production, lecon.id).toBe(true);
     }
   });
 
