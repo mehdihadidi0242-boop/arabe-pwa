@@ -761,6 +761,391 @@ button {
 }
 
 /* ============================================================
+   Onglet Lecon
+   ============================================================ */
+
+.lecon__entete {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.lecon__rang {
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+}
+
+.lecon__titre {
+  font-family: var(--police-titre);
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.15;
+}
+
+.lecon__titre-ar {
+  font-size: 24px;
+  color: var(--ink-2);
+}
+
+.lecon__resume {
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.lecon__sous-titre {
+  margin-top: var(--space-2);
+  font-family: var(--police-titre);
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.lecon__texte {
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.encadre {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--r-12);
+  border-inline-start: 3px solid var(--accent);
+  background: var(--accent-soft);
+}
+
+.encadre--piege {
+  border-inline-start-color: var(--warn);
+  background: var(--warn-soft);
+}
+
+.encadre__etiquette {
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.encadre--piege .encadre__etiquette {
+  color: var(--warn);
+}
+
+.encadre__texte {
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.exemples {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.exemple {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-12);
+  background: var(--surface);
+}
+
+.exemple__ar {
+  font-size: 26px;
+  text-align: right;
+}
+
+.exemple__translit {
+  color: var(--ink-2);
+  font-size: 14px;
+  font-style: italic;
+}
+
+.exemple__fr {
+  font-size: 15px;
+}
+
+.exemple__note {
+  margin-top: var(--space-1);
+  padding-top: var(--space-1);
+  border-top: 1px solid var(--line);
+}
+
+/* Tableaux : defilement horizontal plutot que compression illisible */
+.tableau-enveloppe {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--r-12);
+  background: var(--surface);
+}
+
+.tableau {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.tableau th,
+.tableau td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  text-align: start;
+  vertical-align: top;
+}
+
+.tableau th {
+  background: var(--surface-2);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.tableau tr:last-child td {
+  border-bottom: none;
+}
+
+.tableau td.ar {
+  font-size: 20px;
+  line-height: 1.8;
+  white-space: nowrap;
+}
+
+/* Coureur d'exercices */
+.coureur__entete {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  color: var(--ink-2);
+  font-size: 14px;
+}
+
+.coureur__carte {
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border-radius: var(--r-20);
+}
+
+.coureur__consigne {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.coureur__enonce {
+  font-size: 30px;
+  text-align: right;
+}
+
+.coureur__enonce--fr {
+  font-family: var(--police-titre);
+  font-size: 22px;
+  text-align: start;
+}
+
+.coureur__trou {
+  display: inline-block;
+  min-width: 2.2em;
+  padding-inline: 6px;
+  border-bottom: 2px dashed var(--warn);
+  color: var(--warn);
+  text-align: center;
+}
+
+.coureur__indice {
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--line);
+}
+
+.coureur__options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.option {
+  min-height: 52px;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-12);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 16px;
+  text-align: start;
+}
+
+.option.ar {
+  font-size: 24px;
+  text-align: right;
+}
+
+.option--choisie {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* Remise en ordre */
+.ordre {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.ordre__ligne {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  min-height: 60px;
+  padding: var(--space-2);
+  border: 2px dashed var(--line);
+  border-radius: var(--r-12);
+}
+
+.ordre__reserve {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.jeton {
+  min-height: var(--cible);
+  padding-inline: var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-10);
+  background: var(--surface-2);
+  color: var(--ink);
+  font-size: 22px;
+  line-height: 1.6;
+}
+
+.jeton--choisi {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* Resultat d'un exercice */
+.resultat {
+  gap: var(--space-2);
+  border-inline-start-width: 3px;
+}
+
+.resultat--juste {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.resultat--faux {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.resultat__verdict {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.resultat--juste .resultat__verdict {
+  color: var(--accent);
+}
+
+.resultat--faux .resultat__verdict {
+  color: var(--danger);
+}
+
+.resultat__attendu {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.resultat__reponse {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.resultat__reponse.ar {
+  text-align: right;
+}
+
+.resultat__ecart {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.resultat__explication {
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--line);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.eval--bien {
+  border-color: var(--line);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+/* A voix haute */
+.voix__phrase {
+  font-size: 34px;
+  text-align: center;
+  line-height: 2;
+}
+
+/* Atelier */
+.consignes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.consigne {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-12);
+  background: var(--surface);
+  color: var(--ink);
+  text-align: start;
+}
+
+.consigne--active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.consigne__lecon {
+  color: var(--ink-2);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.consigne--active .consigne__lecon {
+  color: var(--accent);
+}
+
+.consigne__texte {
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.saisie--atelier {
+  min-height: 220px;
+  font-family: var(--police-arabe);
+  font-size: 22px;
+  line-height: 2;
+  text-align: right;
+}
+
+/* ============================================================
    Ecrans a venir
    ============================================================ */
 

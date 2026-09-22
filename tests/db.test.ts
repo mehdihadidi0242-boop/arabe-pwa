@@ -14,6 +14,7 @@ import {
   fermerDb,
   lire,
   lireMeta,
+  migrationManquante,
   ouvrirDb,
   parIndex,
   STORES,
@@ -37,17 +38,27 @@ describe('schema', () => {
 
   it('cree les index necessaires aux ecrans', async () => {
     const db = await ouvrirDb();
-    const tx = db.transaction(['words', 'cards', 'phrases', 'verses'], 'readonly');
-    expect([...tx.objectStore('words').indexNames]).toEqual(
-      expect.arrayContaining(['verseId', 'rootKey', 'rangFrequence']),
-    );
+    const tx = db.transaction(['cards', 'phrases'], 'readonly');
     expect([...tx.objectStore('cards').indexNames]).toEqual(
       expect.arrayContaining(['due', 'refId']),
     );
     expect([...tx.objectStore('phrases').indexNames]).toEqual(
       expect.arrayContaining(['status', 'theme']),
     );
-    expect([...tx.objectStore('verses').indexNames]).toEqual(expect.arrayContaining(['surahId']));
+  });
+
+  it('a une migration ecrite pour chaque version jusqu’a la courante', () => {
+    // Sans cette garantie, une version peut s'installer sans son schema : la
+    // base prend le nouveau numero, la migration ne se rejoue jamais, et
+    // l'application tourne sur des stores absents.
+    expect(migrationManquante()).toBeNull();
+  });
+
+  it('a retire les stores du module coranique abandonne', async () => {
+    const db = await ouvrirDb();
+    for (const obsolete of ['surahs', 'verses', 'words', 'memoLogs']) {
+      expect(db.objectStoreNames.contains(obsolete)).toBe(false);
+    }
   });
 });
 
@@ -120,16 +131,18 @@ describe('index', () => {
     expect((await parIndex<{ id: string }>('phrases', 'theme', 'Repas')).map((p) => p.id).sort()).toEqual(['a', 'b']);
   });
 
-  it('retrouve les mots par racine', async () => {
-    await viderStore('words');
-    await ecrirePlusieurs('words', [
-      { id: '1:1:1', rootKey: 'كتب', verseId: '1:1', position: 1, ar: 'كتاب', glossEn: 'book', glossFr: null, verifie: false, root: ['ك', 'ت', 'ب'], pos: 'N', meaningKnown: false },
-      { id: '1:1:2', rootKey: 'كتب', verseId: '1:1', position: 2, ar: 'كاتب', glossEn: 'writer', glossFr: null, verifie: false, root: ['ك', 'ت', 'ب'], pos: 'N', meaningKnown: false },
-      { id: '1:1:3', rootKey: 'علم', verseId: '1:1', position: 3, ar: 'علم', glossEn: 'knowledge', glossFr: null, verifie: false, root: ['ع', 'ل', 'م'], pos: 'N', meaningKnown: false },
+  it('retrouve les progres et les ateliers, ajoutes en version 2', async () => {
+    await viderStore('progres');
+    await ecrirePlusieurs('progres', [
+      { leconId: 'phrase-nominale', commenceeLe: '', terminee: true, termineeLe: '', passages: 1 },
+      { leconId: 'adjectif', commenceeLe: '', terminee: false, termineeLe: null, passages: 0 },
     ]);
+    expect(await compter('progres')).toBe(2);
+    expect(await lire('progres', 'phrase-nominale')).toMatchObject({ passages: 1 });
 
-    expect((await parIndex('words', 'rootKey', 'كتب')).length).toBe(2);
-    expect((await parIndex('words', 'verseId', '1:1')).length).toBe(3);
+    await viderStore('ateliers');
+    await ecrire('ateliers', { date: '2026-09-27', consigne: 'c', texte: 't', modifieLe: '' });
+    expect(await lire('ateliers', '2026-09-27')).toMatchObject({ texte: 't' });
   });
 });
 

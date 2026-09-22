@@ -12,6 +12,7 @@ import { ecranAujourdhui } from '../screens/aujourdhui';
 import { ecranAPropos } from '../screens/apropos';
 import { ecranAVenir } from '../screens/a-venir';
 import { ecranDarija } from '../screens/darija/index';
+import { ecranLecon } from '../screens/lecon/index';
 import { el, icone, remplacer } from '../ui/dom';
 import { basculerTheme, themeApplique } from '../ui/theme';
 import type { Ecran } from './ecran';
@@ -61,12 +62,7 @@ function ecranPour(route: Route): Ecran {
     case 'aujourdhui':
       return ecranAujourdhui();
     case 'lecon':
-      return ecranAVenir(
-        'Leçon',
-        'Arabe standard',
-        'Leçons de grammaire et exercices corrigés : conjugaison, adjectifs, ' +
-          'constructions de phrases et connecteurs logiques.',
-      );
+      return ecranLecon(route.vue);
     case 'darija':
       return ecranDarija(route.vue);
     case 'suivi':

@@ -7,31 +7,27 @@
  */
 
 export const DB_NOM = 'arabe';
-export const DB_VERSION = 1;
+export const DB_VERSION = 2;
 
 export type NomStore =
-  | 'surahs'
-  | 'verses'
-  | 'words'
   | 'cards'
   | 'phrases'
   | 'audio'
   | 'sessions'
   | 'sundayPreps'
-  | 'memoLogs'
+  | 'progres'
+  | 'ateliers'
   | 'meta';
 
 /** Tous les stores, dans l'ordre ou l'export les serialise. */
 export const STORES: readonly NomStore[] = [
-  'surahs',
-  'verses',
-  'words',
   'cards',
   'phrases',
   'audio',
   'sessions',
   'sundayPreps',
-  'memoLogs',
+  'progres',
+  'ateliers',
   'meta',
 ];
 
@@ -39,16 +35,6 @@ type Migration = (db: IDBDatabase, transaction: IDBTransaction) => void;
 
 const MIGRATIONS: Record<number, Migration> = {
   1(db) {
-    db.createObjectStore('surahs', { keyPath: 'id' });
-
-    const verses = db.createObjectStore('verses', { keyPath: 'id' });
-    verses.createIndex('surahId', 'surahId');
-
-    const words = db.createObjectStore('words', { keyPath: 'id' });
-    words.createIndex('verseId', 'verseId');
-    words.createIndex('rootKey', 'rootKey');
-    words.createIndex('rangFrequence', 'rangFrequence');
-
     const cards = db.createObjectStore('cards', { keyPath: 'id' });
     cards.createIndex('due', 'due');
     cards.createIndex('refId', 'refId');
@@ -60,10 +46,47 @@ const MIGRATIONS: Record<number, Migration> = {
     db.createObjectStore('audio', { keyPath: 'id' });
     db.createObjectStore('sessions', { keyPath: 'date' });
     db.createObjectStore('sundayPreps', { keyPath: 'date' });
-    db.createObjectStore('memoLogs', { keyPath: 'id', autoIncrement: true });
     db.createObjectStore('meta', { keyPath: 'cle' });
   },
+
+  /**
+   * Abandon du module coranique au profit des lecons de grammaire.
+   *
+   * Les stores `surahs`, `verses`, `words` et `memoLogs` n'ont jamais recu de
+   * donnees — l'import n'a jamais ete ecrit — mais une base creee en v1 les
+   * contient. On les retire pour que le schema reste le reflet exact de ce
+   * que l'application utilise, et que l'export ne trimbale pas des tables
+   * vides. `deleteObjectStore` sur un store absent leve, d'ou le test.
+   */
+  2(db) {
+    for (const obsolete of ['surahs', 'verses', 'words', 'memoLogs']) {
+      if (db.objectStoreNames.contains(obsolete)) db.deleteObjectStore(obsolete);
+    }
+
+    // Pas d'index sur « terminee » : un booleen n'est pas une cle valide en
+    // IndexedDB, l'index resterait vide. Le nombre de lecons se compte sur
+    // les doigts, on relit le store entier.
+    if (!db.objectStoreNames.contains('progres')) {
+      db.createObjectStore('progres', { keyPath: 'leconId' });
+    }
+    if (!db.objectStoreNames.contains('ateliers')) {
+      db.createObjectStore('ateliers', { keyPath: 'date' });
+    }
+  },
 };
+
+/**
+ * Premiere version sans migration ecrite, ou null si la suite est complete.
+ *
+ * Un trou dans la suite est une erreur de programmation, jamais une situation
+ * normale : la base porterait un numero de version qui ne correspond a rien.
+ */
+export function migrationManquante(): number | null {
+  for (let version = 1; version <= DB_VERSION; version += 1) {
+    if (!MIGRATIONS[version]) return version;
+  }
+  return null;
+}
 
 let connexion: IDBDatabase | null = null;
 let ouverture: Promise<IDBDatabase> | null = null;
@@ -90,7 +113,18 @@ export function ouvrirDb(): Promise<IDBDatabase> {
       if (!txMigration) throw new Error('Transaction de migration absente');
       const depuis = evenement.oldVersion;
       for (let version = depuis + 1; version <= DB_VERSION; version += 1) {
-        MIGRATIONS[version]?.(db, txMigration);
+        const migration = MIGRATIONS[version];
+        // Ne jamais laisser passer une version sans migration : la base
+        // prendrait le nouveau numero sans en avoir le schema, et la
+        // migration ne se rejouerait plus jamais. Lever ici annule la
+        // transaction de mise a jour et laisse la base intacte.
+        if (!migration) {
+          throw new Error(
+            `Aucune migration pour la version ${version} de la base. ` +
+              'Schema et numero de version sont desynchronises.',
+          );
+        }
+        migration(db, txMigration);
       }
     };
 

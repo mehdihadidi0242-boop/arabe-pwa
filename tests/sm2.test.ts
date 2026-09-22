@@ -14,16 +14,16 @@ const JOUR = '2026-09-21';
 const INSTANT = '2026-09-21T09:00:00.000Z';
 
 function carte(patch: Partial<Card> = {}): Card {
-  return { ...creerCarte('mot', '67:1:3', JOUR), ...patch };
+  return { ...creerCarte('exercice', 'pn-1', JOUR), ...patch };
 }
 
 describe('carte neuve', () => {
   it('part a 2,5 d’aisance, zero repetition, due aujourd’hui', () => {
-    const c = creerCarte('mot', '67:1:3', JOUR);
+    const c = creerCarte('exercice', 'pn-1', JOUR);
     expect(c).toMatchObject({
-      id: 'mot:67:1:3',
-      kind: 'mot',
-      refId: '67:1:3',
+      id: 'exercice:pn-1',
+      kind: 'exercice',
+      refId: 'pn-1',
       reps: 0,
       ef: EF_INITIAL,
       interval: 0,

@@ -22,12 +22,12 @@ afterEach(async () => {
 
 describe('identifiants', () => {
   it('derivent du type et de la reference', () => {
-    expect(idCarte('mot', '67:1:3')).toBe('mot:67:1:3');
+    expect(idCarte('exercice', 'pn-1')).toBe('exercice:pn-1');
     expect(idCarte('phrase', 'abc')).toBe('phrase:abc');
   });
 
-  it('separent les mots des phrases portant la meme reference', () => {
-    expect(idCarte('mot', 'x')).not.toBe(idCarte('phrase', 'x'));
+  it('separent les exercices des phrases portant la meme reference', () => {
+    expect(idCarte('exercice', 'x')).not.toBe(idCarte('phrase', 'x'));
   });
 });
 
@@ -83,18 +83,18 @@ describe('notation', () => {
 });
 
 describe('separation des paquets', () => {
-  it('ne melange pas les mots coraniques et les phrases de darija', async () => {
+  it('ne melange pas les exercices de grammaire et les phrases de darija', async () => {
     await noterCarte('phrase', 'p1', 'good', JOUR);
-    await noterCarte('mot', '67:1:3', 'good', JOUR);
+    await noterCarte('exercice', 'pn-1', 'good', JOUR);
 
     expect((await toutesLesCartes()).length).toBe(2);
     expect((await cartesDe('phrase')).map((c) => c.refId)).toEqual(['p1']);
-    expect((await cartesDe('mot')).map((c) => c.refId)).toEqual(['67:1:3']);
+    expect((await cartesDe('exercice')).map((c) => c.refId)).toEqual(['pn-1']);
   });
 
   it('ne sort que le bon paquet dans la file du jour', async () => {
     await noterCarte('phrase', 'p1', 'again', JOUR);
-    await noterCarte('mot', '67:1:3', 'again', JOUR);
+    await noterCarte('exercice', 'pn-1', 'again', JOUR);
 
     const file = await fileDuJourPour('phrase', JOUR);
     expect(file.map((c) => c.refId)).toEqual(['p1']);

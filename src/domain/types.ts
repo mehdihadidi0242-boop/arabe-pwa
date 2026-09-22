@@ -80,8 +80,8 @@ export interface Review {
 
 export interface Card {
   id: string;
-  /** Mot coranique ou phrase de darija selon `kind`. */
-  kind: 'mot' | 'phrase';
+  /** Exercice de grammaire ou phrase de darija, selon `kind`. */
+  kind: 'exercice' | 'phrase';
   refId: string;
   reps: number;
   /** Facteur de facilite, jamais sous 1,3. */
