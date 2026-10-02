@@ -11,6 +11,8 @@
 
 import { leconsAbordees } from '../../data/progres';
 import type { Exemple } from '../../data/lecons/types';
+import type { SujetClip } from '../../data/clips';
+import { blocEnregistrement, type BlocEnregistrement } from '../../ui/bloc-enregistrement';
 import { el, remplacer } from '../../ui/dom';
 import { messageVide } from '../darija/commun';
 import type { ContexteLecon } from './commun';
@@ -18,12 +20,30 @@ import type { ContexteLecon } from './commun';
 interface Ligne {
   exemple: Exemple;
   lecon: string;
+  /** Identifiant de la lecon, pour rattacher l'enregistrement. */
+  leconId: string;
+  /** Rang de la phrase dans sa lecon. */
+  index: number;
+}
+
+/** Sujet auquel rattacher l'enregistrement d'une phrase. */
+function sujetDe(ligne: Ligne | undefined): SujetClip {
+  return {
+    genre: 'lecture',
+    lecon: ligne?.leconId ?? 'inconnue',
+    index: ligne?.index ?? 0,
+  };
 }
 
 export async function vueVoix(racine: HTMLElement, ctx: ContexteLecon): Promise<void> {
   const lecons = await leconsAbordees();
   const lignes: Ligne[] = lecons.flatMap((lecon) =>
-    lecon.aVoixHaute.map((exemple) => ({ exemple, lecon: lecon.titre })),
+    lecon.aVoixHaute.map((exemple, index) => ({
+      exemple,
+      lecon: lecon.titre,
+      leconId: lecon.id,
+      index,
+    })),
   );
 
   if (lignes.length === 0) {
@@ -34,8 +54,21 @@ export async function vueVoix(racine: HTMLElement, ctx: ContexteLecon): Promise<
   let position = 0;
   let revelee = false;
 
+  /**
+   * Bloc d'enregistrement de la phrase courante.
+   * Il est detache avant chaque redessin : sans cela, un enregistrement en
+   * cours continuerait a tourner apres un changement de phrase, micro ouvert.
+   */
+  let bloc: BlocEnregistrement = blocEnregistrement({
+    sujet: sujetDe(lignes[0]),
+    dire: ctx.dire,
+  });
+
   function dessiner(): void {
     const ligne = lignes[position];
+    bloc.detacher();
+    if (ligne) bloc = blocEnregistrement({ sujet: sujetDe(ligne), dire: ctx.dire });
+
     if (!ligne) {
       remplacer(
         racine,
@@ -94,6 +127,18 @@ export async function vueVoix(racine: HTMLElement, ctx: ContexteLecon): Promise<
               class: 'note',
               text: 'Prononce la phrase, puis vérifie la transcription et le sens.',
             }),
+      ),
+      el(
+        'div',
+        { class: 'carte' },
+        el('div', { class: 'oral__consigne', text: 'M’ENREGISTRER' }),
+        bloc.element,
+        el('p', {
+          class: 'note',
+          text:
+            'Enregistre-toi et réécoute-toi. L’application ne juge pas ta prononciation : ' +
+            'c’est ton oreille qui compare.',
+        }),
       ),
       revelee
         ? el('button', {

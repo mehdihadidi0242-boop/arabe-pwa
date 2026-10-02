@@ -1146,6 +1146,153 @@ button {
 }
 
 /* ============================================================
+   Enregistrement audio
+   ============================================================ */
+
+.enr {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.enr__bouton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 52px;
+  border-radius: var(--r-12);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.enr__bouton--demarrer {
+  border: 1px solid var(--danger);
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.enr__bouton--arreter {
+  border: none;
+  background: var(--danger);
+  color: var(--surface);
+}
+
+.enr__marche {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.enr__entete {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.enr__point {
+  width: 12px;
+  height: 12px;
+  border-radius: var(--r-pilule);
+  background: var(--danger);
+  animation: pulsation 1.2s ease-in-out infinite;
+}
+
+@keyframes pulsation {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.enr__etat {
+  color: var(--danger);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.enr__chrono {
+  margin-left: auto;
+  font-size: 22px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.enr__onde {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  justify-content: flex-start;
+  height: 56px;
+  padding: 0 var(--space-1);
+  overflow: hidden;
+  border-radius: var(--r-10);
+  background: var(--danger-soft);
+}
+
+.enr__onde--figee {
+  flex-grow: 1;
+  gap: 2px;
+  height: 44px;
+  background: transparent;
+}
+
+.enr__barre {
+  flex-shrink: 0;
+  width: 4px;
+  border-radius: 2px;
+  background: var(--danger);
+}
+
+.enr__barre--figee {
+  width: 3px;
+  background: var(--ink-2);
+}
+
+.enr__relecture {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.enr__jouer {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--cible);
+  height: var(--cible);
+  border: none;
+  border-radius: var(--r-pilule);
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.enr__duree {
+  flex-shrink: 0;
+  color: var(--ink-2);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.enr__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.note--erreur {
+  padding: var(--space-3);
+  border-radius: var(--r-12);
+  background: var(--danger-soft);
+  color: var(--danger);
+  font-weight: 600;
+}
+
+/* ============================================================
    Bandeau de mise a jour
    ============================================================ */
 
