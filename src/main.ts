@@ -8,6 +8,7 @@
 
 import './styles/base.css';
 import { demarrerCoquille } from './app/coquille';
+import { enregistrerServiceWorker } from './app/service-worker';
 import { ouvrirDb, ecrireMeta, lireMeta } from './data/db';
 import { demanderPersistance } from './data/stockage';
 import { el, remplacer } from './ui/dom';
@@ -31,6 +32,7 @@ async function demarrer(): Promise<void> {
   }
 
   demarrerCoquille(hote);
+  enregistrerServiceWorker();
 }
 
 function afficherErreurFatale(hote: HTMLElement, erreur: unknown): void {

@@ -3,10 +3,5 @@ dist/
 .vite/
 *.local
 
-# Donnees sources telechargees par l'utilisateur (Tanzil, Quranic Arabic Corpus).
-# Elles ne sont pas redistribuees dans ce depot : voir README.md.
-data/*
-!data/LISEZ-MOI.md
-
 # Sauvegardes exportees depuis l'application
 arabe-sauvegarde-*.json
