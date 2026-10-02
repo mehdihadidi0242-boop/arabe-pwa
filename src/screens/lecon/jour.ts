@@ -5,7 +5,13 @@
  * explicite : revenir relire la regle en plein exercice doit rester possible.
  */
 
-import { commencerLecon, leconDuJour, progresDe, terminerLecon } from '../../data/progres';
+import {
+  commencerLecon,
+  etatDuProgramme,
+  leconDuJour,
+  progresDe,
+  terminerLecon,
+} from '../../data/progres';
 import { PROGRAMME } from '../../data/lecons/index';
 import type { Exemple, Lecon, Section } from '../../data/lecons/types';
 import { petitBoutonEcouter } from '../../ui/bouton-ecouter';
@@ -14,27 +20,57 @@ import { monterCoureur, type BilanCoureur } from './coureur';
 import type { ContexteLecon } from './commun';
 import { messageVide } from '../darija/commun';
 
-type Etape = 'matiere' | 'exercices' | 'bilan';
+type Etape = 'matiere' | 'exercices' | 'bilan' | 'programme';
 
 export async function vueJour(racine: HTMLElement, ctx: ContexteLecon): Promise<void> {
-  const lecon = await leconDuJour();
-  if (!lecon) {
+  const proposee = await leconDuJour();
+  if (!proposee) {
     remplacer(racine, messageVide('Aucune leçon disponible.'));
     return;
   }
 
-  await commencerLecon(lecon.id);
-  const progres = await progresDe(lecon.id);
-
+  /** Lecon affichee : celle que l'application propose, ou celle qu'on a choisie. */
+  let lecon = proposee;
   let etape: Etape = 'matiere';
   let bilan: BilanCoureur | null = null;
 
+  await commencerLecon(lecon.id);
+  let passages = (await progresDe(lecon.id))?.passages ?? 0;
+
+  async function ouvrir(choisie: Lecon): Promise<void> {
+    lecon = choisie;
+    await commencerLecon(lecon.id);
+    passages = (await progresDe(lecon.id))?.passages ?? 0;
+    etape = 'matiere';
+    bilan = null;
+    dessiner();
+  }
+
   function dessiner(): void {
-    if (etape === 'matiere') {
-      remplacer(racine, matiere(lecon!, progres?.passages ?? 0, () => {
-        etape = 'exercices';
+    if (etape === 'programme') {
+      void dessinerProgramme(racine, lecon.id, (choisie) => void ouvrir(choisie), () => {
+        etape = 'matiere';
         dessiner();
-      }));
+      });
+      return;
+    }
+
+    if (etape === 'matiere') {
+      remplacer(
+        racine,
+        matiere(
+          lecon,
+          passages,
+          () => {
+            etape = 'exercices';
+            dessiner();
+          },
+          () => {
+            etape = 'programme';
+            dessiner();
+          },
+        ),
+      );
       return;
     }
 
@@ -57,11 +93,11 @@ export async function vueJour(racine: HTMLElement, ctx: ContexteLecon): Promise<
         zone,
       );
       monterCoureur(zone, {
-        exercices: lecon!.exercices,
-        intitule: lecon!.titre,
+        exercices: lecon.exercices,
+        intitule: lecon.titre,
         surFin: async (resultat) => {
           bilan = resultat;
-          await terminerLecon(lecon!.id);
+          await terminerLecon(lecon.id);
           etape = 'bilan';
           dessiner();
         },
@@ -69,24 +105,42 @@ export async function vueJour(racine: HTMLElement, ctx: ContexteLecon): Promise<
       return;
     }
 
-    remplacer(racine, ecranBilan(lecon!, bilan, ctx, () => {
-      etape = 'matiere';
-      bilan = null;
-      dessiner();
-    }));
+    void dessinerBilan(racine, lecon, bilan, ctx, {
+      recommencer: () => {
+        etape = 'matiere';
+        bilan = null;
+        dessiner();
+      },
+      ouvrir: (choisie) => void ouvrir(choisie),
+    });
   }
 
   dessiner();
 }
 
-function matiere(lecon: Lecon, passages: number, surCommencer: () => void): HTMLElement {
+function matiere(
+  lecon: Lecon,
+  passages: number,
+  surCommencer: () => void,
+  surProgramme: () => void,
+): HTMLElement {
   return el(
     'div',
     { class: 'ecran' },
     el(
       'div',
       { class: 'lecon__entete' },
-      el('div', { class: 'lecon__rang', text: `Leçon ${lecon.ordre} sur ${PROGRAMME.length}` }),
+      el(
+        'div',
+        { class: 'lecon__rang-ligne' },
+        el('div', { class: 'lecon__rang', text: `Leçon ${lecon.ordre} sur ${PROGRAMME.length}` }),
+        el('button', {
+          type: 'button',
+          class: 'bouton-texte',
+          text: 'Choisir une leçon',
+          onClick: surProgramme,
+        }),
+      ),
       el('h2', { class: 'lecon__titre', text: lecon.titre }),
       lecon.titreAr
         ? el('div', { class: 'ar lecon__titre-ar', dir: 'rtl', lang: 'ar', text: lecon.titreAr })
@@ -212,19 +266,29 @@ function paragrapheRiche(contenu: string, classe: string): HTMLElement {
   return paragraphe;
 }
 
-function ecranBilan(
+interface ActionsBilan {
+  recommencer: () => void;
+  ouvrir: (lecon: Lecon) => void;
+}
+
+async function dessinerBilan(
+  racine: HTMLElement,
   lecon: Lecon,
   bilan: BilanCoureur | null,
   ctx: ContexteLecon,
-  surRecommencer: () => void,
-): HTMLElement {
+  actions: ActionsBilan,
+): Promise<void> {
   const justes = bilan?.justes ?? 0;
   const total = bilan?.total ?? 0;
   const reprises = bilan?.reprises ?? 0;
 
-  return el(
-    'div',
-    { class: 'ecran' },
+  // La suite du programme : sans ce bouton, la seule facon d'avancer serait
+  // de deviner que l'application changera de lecon toute seule.
+  const etat = await etatDuProgramme();
+  const suivante = etat.find((a) => a.lecon.ordre > lecon.ordre && !a.achevee)?.lecon;
+
+  remplacer(
+    racine,
     el(
       'div',
       { class: 'carte carte--bilan' },
@@ -245,17 +309,90 @@ function ecranBilan(
           'Les exercices reviendront tout seuls aux dates calculées. ' +
           'Tu les retrouveras dans « Révision ».',
       }),
+      suivante
+        ? el('button', {
+            type: 'button',
+            class: 'bouton bouton--large',
+            text: `Leçon suivante : ${suivante.titre}`,
+            onClick: () => actions.ouvrir(suivante),
+          })
+        : el('p', { class: 'note', text: 'Tu as parcouru tout le programme.' }),
       el('button', {
         type: 'button',
-        class: 'bouton bouton--large',
-        text: 'Revoir la leçon',
-        onClick: surRecommencer,
+        class: 'bouton bouton--secondaire bouton--large',
+        text: 'Revoir cette leçon',
+        onClick: actions.recommencer,
       }),
       el('button', {
         type: 'button',
         class: 'bouton bouton--secondaire bouton--large',
         text: 'Aller à la révision',
         onClick: () => ctx.allerA('revision'),
+      }),
+    ),
+  );
+}
+
+/** Liste du programme, avec l'avancement de chaque leçon. */
+async function dessinerProgramme(
+  racine: HTMLElement,
+  courante: string,
+  surChoix: (lecon: Lecon) => void,
+  surRetour: () => void,
+): Promise<void> {
+  const etat = await etatDuProgramme();
+
+  remplacer(
+    racine,
+    el(
+      'div',
+      { class: 'ecran' },
+      el('button', { type: 'button', class: 'bouton-texte', text: '← Revenir', onClick: surRetour }),
+      el('h2', { class: 'lecon__titre', text: 'Le programme' }),
+      el('p', {
+        class: 'note',
+        text:
+          'Chaque leçon s’appuie sur la précédente, mais tu restes libre d’aller ' +
+          'où tu veux.',
+      }),
+      ...etat.map((avancement) => {
+        const estCourante = avancement.lecon.id === courante;
+        const part =
+          avancement.total > 0 ? Math.round((avancement.abordes / avancement.total) * 100) : 0;
+
+        return el(
+          'button',
+          {
+            type: 'button',
+            class: `programme__ligne ${estCourante ? 'programme__ligne--courante' : ''}`,
+            onClick: () => surChoix(avancement.lecon),
+          },
+          el(
+            'span',
+            { class: 'programme__texte' },
+            el('span', {
+              class: 'programme__rang',
+              text: `Leçon ${avancement.lecon.ordre}`,
+            }),
+            el('span', { class: 'programme__titre', text: avancement.lecon.titre }),
+            el('span', {
+              class: 'programme__detail',
+              text: avancement.achevee
+                ? `${avancement.total} exercices abordés`
+                : `${avancement.abordes} sur ${avancement.total} exercices`,
+            }),
+          ),
+          el('span', {
+            class: `pastille ${
+              avancement.achevee
+                ? 'pastille--fait'
+                : avancement.abordes > 0
+                  ? 'pastille--en-cours'
+                  : ''
+            }`,
+            text: avancement.achevee ? 'Faite' : avancement.abordes > 0 ? `${part} %` : 'À faire',
+          }),
+        );
       }),
     ),
   );

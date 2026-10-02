@@ -41,6 +41,9 @@ interface Etape {
   carte: Card;
 }
 
+/** Nombre de fois ou une phrase ratee revient dans le meme tour. */
+const MAX_REPRISES = 1;
+
 export async function vueOral(racine: HTMLElement, ctx: ContexteDarija): Promise<void> {
   const aujourdhui = jourISO();
   const phrases = await toutesLesPhrases();
@@ -60,6 +63,8 @@ export async function vueOral(racine: HTMLElement, ctx: ContexteDarija): Promise
   let position = 0;
   let revelee = false;
   const stats = { sais: 0, presque: 0, revoir: 0 };
+  /** Combien de fois chaque phrase est deja revenue dans ce tour. */
+  const reprises = new Map<string, number>();
 
   async function recommencer(toutRevoir: boolean): Promise<void> {
     etapes = await construireFile(await toutesLesPhrases(), aujourdhui, toutRevoir);
@@ -90,8 +95,12 @@ export async function vueOral(racine: HTMLElement, ctx: ContexteDarija): Promise
     else stats.revoir += 1;
 
     // « À revoir » ramene la phrase en fin de seance, comme l'exige SM-2 :
-    // une phrase oubliee doit etre revue le jour meme, pas demain.
-    if (evaluation.note === 'again') {
+    // une phrase oubliee doit etre revue le jour meme, pas demain. Mais une
+    // seule fois : sans plafond, la file grandit a chaque echec et le tour ne
+    // se termine jamais.
+    const dejaReprise = reprises.get(etape.phrase.id) ?? 0;
+    if (evaluation.note === 'again' && dejaReprise < MAX_REPRISES) {
+      reprises.set(etape.phrase.id, dejaReprise + 1);
       etapes = [...etapes, { phrase: etape.phrase, carte: notee }];
     }
 

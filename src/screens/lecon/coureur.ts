@@ -55,6 +55,16 @@ const NOTES_JUSTES: readonly NoteProposee[] = [
   { note: 'easy', libelle: 'Facile', classe: 'eval--sait' },
 ];
 
+/**
+ * Nombre de fois ou un exercice rate revient dans la meme seance.
+ *
+ * Une seule reprise. Au-dela, la seance s'etire sans fin et finit par ne plus
+ * jamais se terminer : c'est exactement ce qui empechait d'atteindre la lecon
+ * suivante. Un exercice qui resiste reviendra un autre jour, par la
+ * repetition espacee.
+ */
+const MAX_REPRISES = 1;
+
 /** Ce que la correction exigera, annonce avant de repondre. */
 const EXIGENCE: Record<Tolerance, string> = {
   consonnes:
@@ -72,6 +82,9 @@ export function monterCoureur(racine: HTMLElement, options: OptionsCoureur): voi
   let resultat: Resultat | null = null;
   let carte: Card | null = null;
   const bilan: BilanCoureur = { total: 0, justes: 0, reprises: 0 };
+
+  /** Nombre de fois ou chaque exercice a deja ete remis dans la file. */
+  const reprises = new Map<string, number>();
 
   /**
    * Bouton « Verifier », garde sous la main pour suivre la saisie.
@@ -112,10 +125,18 @@ export function monterCoureur(racine: HTMLElement, options: OptionsCoureur): voi
       bilan.justes += 1;
     } else {
       bilan.reprises += 1;
-      // Une reponse fausse est notee tout de suite : pas de choix a faire,
-      // et l'exercice revient en fin de seance.
+      // Une reponse fausse est notee tout de suite : pas de choix a faire.
       await noterCarte('exercice', exercice.id, 'again', aujourdhui);
-      file = [...file, exercice];
+
+      // L'exercice revient une fois dans la seance, pas davantage. Sans ce
+      // plafond la file grandit a chaque erreur et la seance ne se termine
+      // jamais : quelqu'un qui bute reste prisonnier de la meme lecon. La
+      // repetition espacee le ramenera un autre jour, c'est son role.
+      const deja = reprises.get(exercice.id) ?? 0;
+      if (deja < MAX_REPRISES) {
+        reprises.set(exercice.id, deja + 1);
+        file = [...file, exercice];
+      }
     }
     dessiner();
   }

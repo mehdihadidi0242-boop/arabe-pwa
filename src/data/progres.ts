@@ -3,6 +3,7 @@
  * terminees, et laquelle proposer aujourd'hui.
  */
 
+import { cartesDe } from './cartes';
 import { ecrire, lire, tout } from './db';
 import { LECONS, leconParId } from './lecons/index';
 import type { Atelier, Lecon, ProgresLecon } from './lecons/types';
@@ -55,14 +56,43 @@ export async function terminerLecon(
 }
 
 /**
- * Lecon a travailler aujourd'hui : la premiere non terminee du programme.
- * Quand tout est termine, on rend la derniere — on la retravaille plutot que
- * de laisser l'ecran vide.
+ * Avancement d'une lecon, deduit des exercices reellement abordes.
+ *
+ * On ne se fie pas a un drapeau pose en fin de parcours : quelqu'un qui quitte
+ * au milieu, ou qui bute sur un exercice, n'atteindrait jamais ce drapeau et
+ * resterait bloque sur la meme lecon. Un exercice compte comme aborde des
+ * qu'il a recu une note, juste ou fausse.
+ */
+export interface AvancementLecon {
+  lecon: Lecon;
+  abordes: number;
+  total: number;
+  achevee: boolean;
+}
+
+/** Avancement de chaque lecon du programme, dans l'ordre. */
+export async function etatDuProgramme(): Promise<AvancementLecon[]> {
+  const vus = new Set((await cartesDe('exercice')).map((carte) => carte.refId));
+
+  return LECONS.map((lecon) => {
+    const abordes = lecon.exercices.filter((exercice) => vus.has(exercice.id)).length;
+    return {
+      lecon,
+      abordes,
+      total: lecon.exercices.length,
+      achevee: abordes === lecon.exercices.length && lecon.exercices.length > 0,
+    };
+  });
+}
+
+/**
+ * Lecon a travailler aujourd'hui : la premiere dont tous les exercices n'ont
+ * pas encore ete abordes. Quand le programme est acheve, on rend la derniere —
+ * on la retravaille plutot que de laisser un ecran vide.
  */
 export async function leconDuJour(): Promise<Lecon | undefined> {
-  const progres = new Map((await toutLeProgres()).map((p) => [p.leconId, p]));
-  const enCours = LECONS.find((lecon) => !progres.get(lecon.id)?.terminee);
-  return enCours ?? LECONS[LECONS.length - 1];
+  const etat = await etatDuProgramme();
+  return (etat.find((avancement) => !avancement.achevee) ?? etat[etat.length - 1])?.lecon;
 }
 
 /** Lecons deja ouvertes, pour la lecture a voix haute et les ateliers. */

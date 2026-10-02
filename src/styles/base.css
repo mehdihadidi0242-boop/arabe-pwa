@@ -770,6 +770,52 @@ button {
   gap: var(--space-1);
 }
 
+.lecon__rang-ligne {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.programme__ligne {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-16);
+  background: var(--surface);
+  color: var(--ink);
+  text-align: start;
+}
+
+.programme__ligne--courante {
+  border-color: var(--accent);
+}
+
+.programme__texte {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.programme__rang {
+  color: var(--ink-2);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.programme__titre {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.programme__detail {
+  color: var(--ink-2);
+  font-size: 13px;
+}
+
 .lecon__rang {
   color: var(--ink-2);
   font-size: 13px;
