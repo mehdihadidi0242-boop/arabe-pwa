@@ -13,6 +13,8 @@ import { leconsAbordees } from '../../data/progres';
 import type { Exemple } from '../../data/lecons/types';
 import type { SujetClip } from '../../data/clips';
 import { blocEnregistrement, type BlocEnregistrement } from '../../ui/bloc-enregistrement';
+import { boutonsEcouter, type BoutonsEcoute } from '../../ui/bouton-ecouter';
+import { arreterLecture } from '../../ui/synthese';
 import { el, remplacer } from '../../ui/dom';
 import { messageVide } from '../darija/commun';
 import type { ContexteLecon } from './commun';
@@ -64,10 +66,21 @@ export async function vueVoix(racine: HTMLElement, ctx: ContexteLecon): Promise<
     dire: ctx.dire,
   });
 
+  /** Boutons d'ecoute de la phrase courante. */
+  let ecoute: BoutonsEcoute = boutonsEcouter({
+    texte: lignes[0]?.exemple.ar ?? '',
+    dire: ctx.dire,
+  });
+
   function dessiner(): void {
     const ligne = lignes[position];
     bloc.detacher();
-    if (ligne) bloc = blocEnregistrement({ sujet: sujetDe(ligne), dire: ctx.dire });
+    ecoute.detacher();
+    arreterLecture();
+    if (ligne) {
+      bloc = blocEnregistrement({ sujet: sujetDe(ligne), dire: ctx.dire });
+      ecoute = boutonsEcouter({ texte: ligne.exemple.ar, dire: ctx.dire });
+    }
 
     if (!ligne) {
       remplacer(
@@ -116,6 +129,7 @@ export async function vueVoix(racine: HTMLElement, ctx: ContexteLecon): Promise<
           lang: 'ar',
           text: ligne.exemple.ar,
         }),
+        ecoute.element,
         revelee
           ? el(
               'div',
@@ -125,7 +139,7 @@ export async function vueVoix(racine: HTMLElement, ctx: ContexteLecon): Promise<
             )
           : el('p', {
               class: 'note',
-              text: 'Prononce la phrase, puis vérifie la transcription et le sens.',
+              text: 'Écoute, répète à voix haute, puis vérifie la transcription et le sens.',
             }),
       ),
       el(

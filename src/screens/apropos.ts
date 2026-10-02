@@ -23,6 +23,8 @@ import {
   type Apercu,
 } from '../data/sauvegarde';
 import { dateLongue, depuisISO } from '../domain/dates';
+import { messageSansVoix } from '../domain/voix';
+import { nomVoix, surVoixChangees } from '../ui/synthese';
 import { afficherBandeau } from '../ui/bandeau';
 import { el, remplacer } from '../ui/dom';
 
@@ -62,6 +64,7 @@ export function ecranAPropos(): Ecran {
     async monter(racine: HTMLElement) {
       const sauvegarde = el('div', { class: 'carte' });
       const stockage = el('div', { class: 'carte' });
+      const voix = el('div', { class: 'carte' });
 
       remplacer(
         racine,
@@ -70,6 +73,7 @@ export function ecranAPropos(): Ecran {
           { class: 'ecran', 'aria-label': 'À propos' },
           sauvegarde,
           stockage,
+          voix,
           carteConfidentialite(),
           carteSources(),
         ),
@@ -77,6 +81,7 @@ export function ecranAPropos(): Ecran {
 
       await dessinerSauvegarde(sauvegarde);
       await dessinerStockage(stockage);
+      dessinerVoix(voix);
     },
   };
 }
@@ -344,6 +349,36 @@ async function dessinerStockage(hote: HTMLElement): Promise<void> {
         }.`,
       }),
   );
+}
+
+/**
+ * Quelle voix prononce l'arabe.
+ * Utile pour diagnostiquer depuis un telephone : si l'ecoute sonne faux, la
+ * premiere chose a savoir est quelle voix le systeme a fournie.
+ */
+function dessinerVoix(hote: HTMLElement): void {
+  const dessiner = () => {
+    const nom = nomVoix();
+    remplacer(
+      hote,
+      el('h2', { class: 'bloc__titre', text: 'Voix de lecture' }),
+      el('p', {
+        class: 'note',
+        text: nom
+          ? `L’arabe est prononcé par « ${nom} », fournie par le système.`
+          : messageSansVoix(),
+      }),
+      el('p', {
+        class: 'note',
+        text:
+          'La synthèse lit l’arabe standard. Elle ne sait pas dire la darija : ' +
+          'une phrase du carnet serait lue avec l’accent de l’arabe standard.',
+      }),
+    );
+  };
+
+  surVoixChangees(dessiner);
+  dessiner();
 }
 
 function carteConfidentialite(): HTMLElement {

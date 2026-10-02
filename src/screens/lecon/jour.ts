@@ -8,6 +8,7 @@
 import { commencerLecon, leconDuJour, progresDe, terminerLecon } from '../../data/progres';
 import { PROGRAMME } from '../../data/lecons/index';
 import type { Exemple, Lecon, Section } from '../../data/lecons/types';
+import { petitBoutonEcouter } from '../../ui/bouton-ecouter';
 import { el, remplacer } from '../../ui/dom';
 import { monterCoureur, type BilanCoureur } from './coureur';
 import type { ContexteLecon } from './commun';
@@ -141,10 +142,17 @@ function sectionEnDom(section: Section): HTMLElement {
 }
 
 function exempleEnDom(exemple: Exemple): HTMLElement {
+  const ecoute = petitBoutonEcouter(exemple.ar);
+
   return el(
     'div',
     { class: 'exemple' },
-    el('p', { class: 'ar exemple__ar', dir: 'rtl', lang: 'ar', text: exemple.ar }),
+    el(
+      'div',
+      { class: 'exemple__ligne' },
+      el('p', { class: 'ar exemple__ar', dir: 'rtl', lang: 'ar', text: exemple.ar }),
+      ecoute,
+    ),
     el('p', { class: 'exemple__translit', text: exemple.translit }),
     el('p', { class: 'exemple__fr', text: exemple.fr }),
     exemple.note ? el('p', { class: 'note exemple__note', text: exemple.note }) : null,

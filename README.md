@@ -112,6 +112,31 @@ Si tu configures un jour une disposition arabe dans ton système, le bouton
 
 ---
 
+## La partie vocale
+
+**Écouter.** Chaque phrase de « À voix haute » et chaque exemple des leçons
+porte un bouton d'écoute, avec une version **ralentie** — au débit normal, les
+voyelles brèves finales, celles qui portent les cas, sont presque inaudibles
+pour une oreille qui débute.
+
+La voix vient du **système**, pas de l'application : rien n'est téléchargé,
+rien n'est envoyé.
+
+| Appareil | Voix arabe |
+|---|---|
+| Android, iPhone | fournie d'origine, fonctionne hors connexion |
+| Windows, Linux installés en français | **absente** — à ajouter dans les réglages de langue du système |
+
+Quand aucune voix arabe n'est installée, les boutons ne s'affichent pas : un
+bouton qui ne fait rien use plus la confiance qu'une explication. L'écran
+« À propos » indique quelle voix est utilisée.
+
+La synthèse lit l'**arabe standard**. Elle ne sait pas dire la darija : une
+phrase du carnet serait lue avec l'accent de l'arabe standard, donc faux.
+
+**Parler.** Tu peux t'enregistrer et te réécouter. L'application ne note pas
+ta prononciation — voir plus bas pourquoi.
+
 ## Le programme
 
 Huit leçons, dans un ordre où chacune s'appuie sur la précédente :
