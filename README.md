@@ -36,11 +36,34 @@ npm run build
 Le dossier `dist/` contient l'application complète : une quinzaine de
 fichiers, environ 555 Ko, polices comprises.
 
-### 2. Publier
+### 2. Publier sur GitHub Pages
 
-N'importe quel hébergeur de fichiers statiques gratuit convient — GitHub
-Pages, Netlify, Cloudflare Pages. Tu déposes le contenu de `dist/`, tu obtiens
-une adresse en `https://`.
+Le dépôt contient déjà le nécessaire : `.github/workflows/publier.yml`
+reconstruit et republie à chaque envoi sur la branche `principal`. Tu n'as à
+faire ces trois étapes qu'une seule fois.
+
+**a. Créer le dépôt sur GitHub.** Nomme-le `arabe-pwa`, et laisse-le
+**public** : publier des pages depuis un dépôt privé demande un compte payant.
+Le dépôt ne contient que le code et les leçons — tes données d'apprentissage
+restent dans ton navigateur et n'y montent jamais.
+
+**b. Envoyer le code :**
+
+```bash
+git remote add origin https://github.com/TON-COMPTE/arabe-pwa.git
+git push -u origin principal
+```
+
+**c. Activer Pages.** Dans le dépôt : **Settings → Pages → Build and
+deployment → Source**, choisis **GitHub Actions**. Rien d'autre à régler.
+
+L'onglet **Actions** montre alors la construction. Si le typage ou les tests
+échouent, **rien n'est publié** : mieux vaut ne rien envoyer que de mettre une
+version cassée en cache sur ton téléphone.
+
+Ton adresse sera `https://TON-COMPTE.github.io/arabe-pwa/`.
+
+Ensuite, chaque `git push` sur `principal` republie tout seul.
 
 ### 3. Ajouter à l'écran d'accueil
 

@@ -1,0 +1,71 @@
+# Construit l'application et la publie sur GitHub Pages.
+#
+# Se declenche a chaque envoi sur « principal » — c'est le nom de la branche
+# de ce depot, et non « main » : un workflow configure sur « main » ne
+# partirait jamais.
+#
+# Le deploiement n'a lieu que si le typage et les tests passent. Mieux vaut ne
+# rien publier que publier une version cassee sur le telephone, ou elle serait
+# mise en cache par le service worker.
+
+name: Publier sur GitHub Pages
+
+on:
+  push:
+    branches: [principal]
+  # Permet aussi de republier a la main depuis l'onglet Actions.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Une seule publication a la fois. On ne annule pas celle en cours : une
+# publication interrompue laisserait le site dans un etat incertain.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  publier:
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deploiement.outputs.page_url }}
+
+    steps:
+      - name: Recuperer le depot
+        uses: actions/checkout@v4
+
+      - name: Installer Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Installer les dependances
+        # `npm ci` installe exactement ce que decrit package-lock.json, sans
+        # jamais le modifier : la version publiee est celle qui a ete testee.
+        run: npm ci
+
+      - name: Verifier le typage et les tests
+        run: npm run verifier
+
+      - name: Construire
+        # Construit dist/ puis genere le service worker a partir des fichiers
+        # reellement produits.
+        run: npm run build
+
+      - name: Preparer GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Televerser le site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - name: Deployer
+        id: deploiement
+        uses: actions/deploy-pages@v4
