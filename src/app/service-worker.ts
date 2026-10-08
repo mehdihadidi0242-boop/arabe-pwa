@@ -29,6 +29,16 @@ export function enregistrerServiceWorker(): void {
           proposerMiseAJour(enregistrement.waiting);
         }
 
+        // Premiere installation : il n'y a pas encore de controleur. On
+        // previent des que la mise en cache est terminee. Sans cela, rien
+        // n'indique quand l'application devient utilisable sans reseau — et
+        // c'est precisement le moment ou il faut l'ajouter a l'ecran
+        // d'accueil, un raccourci cree trop tot n'emportant pas le mode hors
+        // connexion.
+        if (!navigator.serviceWorker.controller) {
+          void annoncerQuandPret(enregistrement);
+        }
+
         enregistrement.addEventListener('updatefound', () => {
           const entrant = enregistrement.installing;
           if (!entrant) return;
@@ -46,6 +56,63 @@ export function enregistrerServiceWorker(): void {
         // fonctionne, simplement sans mode hors connexion.
       }
     })();
+  });
+}
+
+/**
+ * Signale, une fois, que l'application fonctionne desormais sans reseau.
+ *
+ * On attend l'activation reelle plutot que la simple fin de l'enregistrement :
+ * un service worker enregistre mais pas encore actif ne sert a rien hors
+ * connexion, et annoncer trop tot serait pire que de se taire.
+ */
+async function annoncerQuandPret(enregistrement: ServiceWorkerRegistration): Promise<void> {
+  const actif = await attendreActivation(enregistrement);
+  if (!actif) return;
+
+  const banniere = el(
+    'div',
+    { class: 'maj maj--pret', role: 'status' },
+    el('span', {
+      class: 'maj__texte',
+      text: 'L’application fonctionne maintenant sans connexion.',
+    }),
+    el('p', {
+      class: 'note',
+      text:
+        'C’est le bon moment pour l’ajouter à ton écran d’accueil : ajoutée plus ' +
+        'tôt, elle n’aurait été qu’un raccourci vers le site.',
+    }),
+    el('button', {
+      type: 'button',
+      class: 'bouton bouton--secondaire bouton--compact',
+      text: 'J’ai compris',
+      onClick: () => banniere.remove(),
+    }),
+  );
+
+  document.body.appendChild(banniere);
+  // Elle disparait seule : c'est une bonne nouvelle, pas une alerte.
+  setTimeout(() => banniere.remove(), 15_000);
+}
+
+function attendreActivation(enregistrement: ServiceWorkerRegistration): Promise<boolean> {
+  if (enregistrement.active) return Promise.resolve(true);
+
+  const entrant = enregistrement.installing ?? enregistrement.waiting;
+  if (!entrant) return Promise.resolve(false);
+
+  return new Promise((resoudre) => {
+    const surChangement = () => {
+      if (entrant.state === 'activated') {
+        entrant.removeEventListener('statechange', surChangement);
+        resoudre(true);
+      } else if (entrant.state === 'redundant') {
+        entrant.removeEventListener('statechange', surChangement);
+        resoudre(false);
+      }
+    };
+    entrant.addEventListener('statechange', surChangement);
   });
 }
 

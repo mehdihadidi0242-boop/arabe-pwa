@@ -1445,6 +1445,15 @@ button {
   background: var(--surface);
 }
 
+.maj--pret {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.maj--pret .maj__texte {
+  color: var(--accent);
+}
+
 .maj__texte {
   font-size: 15px;
   font-weight: 600;
