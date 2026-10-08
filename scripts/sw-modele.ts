@@ -55,7 +55,13 @@ const FICHIERS = ${JSON.stringify(liste, null, 2)};
 
 self.addEventListener('install', (evenement) => {
   evenement.waitUntil(
-    caches.open(CACHE).then((cache) => cache.addAll(FICHIERS.map((f) => './' + f))),
+    caches.open(CACHE).then((cache) =>
+      // « ./ » est ajoute en plus des fichiers : c'est l'adresse que lance
+      // l'application installee (start_url), et elle ne correspond a aucun
+      // nom de fichier. Sans elle, le demarrage hors connexion dependrait
+      // d'une seule branche de code dans le gestionnaire de navigation.
+      cache.addAll(['./', ...FICHIERS.map((f) => './' + f)]),
+    ),
   );
   // Pas de skipWaiting() ici : la nouvelle version attend que l'utilisateur
   // l'accepte, pour ne pas recharger l'application sous ses doigts au milieu
@@ -91,8 +97,18 @@ self.addEventListener('fetch', (evenement) => {
     evenement.respondWith(
       (async () => {
         const cache = await caches.open(CACHE);
-        const coquille = await cache.match('./index.html');
-        if (coquille) return coquille;
+
+        // Trois tentatives, de la plus precise a la plus generale. Le
+        // demarrage de l'application installee vise « ./ », une navigation
+        // ordinaire vise une URL quelconque, et la coquille repond pour tout
+        // le reste — le routage se faisant par fragment, elle convient
+        // toujours.
+        const reponse =
+          (await cache.match(requete, { ignoreSearch: true })) ??
+          (await cache.match('./')) ??
+          (await cache.match('./index.html'));
+        if (reponse) return reponse;
+
         try {
           return await fetch(requete);
         } catch (erreur) {

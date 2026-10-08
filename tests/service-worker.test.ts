@@ -153,6 +153,22 @@ describe('source generee', () => {
     expect(source).toContain("cache.match('./index.html')");
   });
 
+  it('met en cache l’adresse de demarrage, et pas seulement index.html', () => {
+    // L'application installee lance « ./ », qui ne correspond a aucun nom de
+    // fichier. Sans cette entree, le demarrage hors connexion dependrait de
+    // la seule branche de navigation.
+    expect(source).toContain("cache.addAll(['./', ...FICHIERS");
+  });
+
+  it('cherche d’abord la navigation demandee, puis l’adresse de demarrage', () => {
+    const navigation = source.slice(
+      source.indexOf("requete.mode === 'navigate'"),
+      source.indexOf('evenement.respondWith', source.indexOf("requete.mode === 'navigate'") + 50),
+    );
+    expect(navigation).toContain('cache.match(requete');
+    expect(navigation).toContain("cache.match('./')");
+  });
+
   it('laisse passer ce qui n’est pas une lecture de nos fichiers', () => {
     expect(source).toContain("requete.method !== 'GET'");
     expect(source).toContain('self.location.origin');
