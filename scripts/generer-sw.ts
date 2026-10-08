@@ -15,6 +15,7 @@ import { fileURLToPath } from 'node:url';
 import {
   listeDePrecache,
   manquants,
+  MARQUE_VERSION,
   sourceServiceWorker,
   versionDe,
 } from './sw-modele';
@@ -45,7 +46,11 @@ if (absents.length > 0) {
   process.exit(1);
 }
 
-const version = versionDe(liste);
+// La version se calcule sur une source portant une marque plutot que son
+// propre numero : sans cela, le numero dependrait de lui-meme.
+const squelette = sourceServiceWorker(liste, MARQUE_VERSION);
+const version = versionDe(liste, squelette);
+
 await writeFile(join(DIST, 'sw.js'), sourceServiceWorker(liste, version), 'utf8');
 
 const octets = (

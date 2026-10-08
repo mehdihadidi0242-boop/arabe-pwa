@@ -21,15 +21,27 @@ export function listeDePrecache(fichiers: readonly string[]): string[] {
   return fichiers.filter((f) => !EXCLUS.includes(f)).sort();
 }
 
+/** Marque remplacee par la version reelle dans la source generee. */
+export const MARQUE_VERSION = '__VERSION__';
+
 /**
- * Nom de cache derive du contenu de la liste.
+ * Nom de cache derive de la liste des fichiers **et** du code du service
+ * worker.
  *
- * Si un seul fichier change de nom, le cache change de nom, et l'ancien est
- * supprime a l'activation. C'est ce qui empeche deux versions de se melanger
- * dans un meme cache.
+ * Les deux comptent. Un fichier qui change de nom doit renouveler le cache,
+ * evidemment — mais un changement de logique aussi : sans cela, une
+ * correction du service worker reutiliserait un cache façonne par l'ancienne
+ * logique, et l'ancien cache ne serait jamais supprime. Le defaut a ete
+ * constate pour de vrai : une correction du gestionnaire de navigation
+ * laissait le nom de cache inchange.
  */
-export function versionDe(liste: readonly string[]): string {
-  return createHash('sha256').update(liste.join('\n')).digest('hex').slice(0, 12);
+export function versionDe(liste: readonly string[], modele: string): string {
+  return createHash('sha256')
+    .update(liste.join('\n'))
+    .update('\0')
+    .update(modele)
+    .digest('hex')
+    .slice(0, 12);
 }
 
 /** Verifie qu'aucun fichier indispensable ne manque. */

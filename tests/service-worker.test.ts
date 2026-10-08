@@ -10,6 +10,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   EXCLUS,
+  MARQUE_VERSION,
   INDISPENSABLES,
   listeDePrecache,
   manquants,
@@ -28,6 +29,10 @@ const DIST = [
   'icones/icone-192.png',
   'icones/icone-512.png',
 ];
+
+
+/** Source temoin, pour que la version ne dependre que de la liste dans ces tests. */
+const MODELE = sourceServiceWorker(listeDePrecache(DIST), MARQUE_VERSION);
 
 describe('liste de precache', () => {
   it('garde tous les fichiers de la construction', () => {
@@ -83,27 +88,41 @@ describe('fichiers indispensables', () => {
 
 describe('nom du cache', () => {
   it('est stable pour une meme construction', () => {
-    expect(versionDe(listeDePrecache(DIST))).toBe(versionDe(listeDePrecache(DIST)));
+    expect(versionDe(listeDePrecache(DIST), MODELE)).toBe(versionDe(listeDePrecache(DIST), MODELE));
   });
 
   it('change des qu’un fichier change de nom', () => {
     // C'est ce qui garantit qu'une nouvelle version n'ira pas lire l'ancien
     // cache, et que l'ancien sera supprime a l'activation.
-    const avant = versionDe(listeDePrecache(DIST));
-    const apres = versionDe(
-      listeDePrecache(DIST.map((f) => (f.startsWith('assets/index-') && f.endsWith('.js') ? 'assets/index-AUTRE.js' : f))),
+    const avant = versionDe(listeDePrecache(DIST), MODELE);
+    const renommee = DIST.map((f) =>
+      f.startsWith('assets/index-') && f.endsWith('.js') ? 'assets/index-AUTRE.js' : f,
     );
-    expect(apres).not.toBe(avant);
+    expect(versionDe(listeDePrecache(renommee), MODELE)).not.toBe(avant);
   });
 
   it('change quand un fichier est ajoute ou retire', () => {
-    const base = versionDe(listeDePrecache(DIST));
-    expect(versionDe(listeDePrecache([...DIST, 'assets/nouveau.js']))).not.toBe(base);
-    expect(versionDe(listeDePrecache(DIST.filter((f) => f !== 'favicon.png')))).not.toBe(base);
+    const base = versionDe(listeDePrecache(DIST), MODELE);
+    expect(versionDe(listeDePrecache([...DIST, 'assets/nouveau.js']), MODELE)).not.toBe(base);
+    expect(
+      versionDe(listeDePrecache(DIST.filter((f) => f !== 'favicon.png')), MODELE),
+    ).not.toBe(base);
+  });
+
+  it('change quand le code du service worker change, a fichiers identiques', () => {
+    // Le defaut qui a motive ce second argument : corriger la logique du
+    // service worker laissait le nom de cache inchange, donc l'ancien cache
+    // survivait et la nouvelle logique reutilisait son contenu.
+    const liste = listeDePrecache(DIST);
+    const autreModele = MODELE.replace("cache.match('./')", "cache.match('./autre')");
+    expect(autreModele).not.toBe(MODELE);
+    expect(versionDe(liste, autreModele)).not.toBe(versionDe(liste, MODELE));
   });
 
   it('ne depend pas de l’ordre de lecture du repertoire', () => {
-    expect(versionDe(listeDePrecache(DIST))).toBe(versionDe(listeDePrecache([...DIST].reverse())));
+    expect(versionDe(listeDePrecache(DIST), MODELE)).toBe(
+      versionDe(listeDePrecache([...DIST].reverse()), MODELE),
+    );
   });
 });
 
