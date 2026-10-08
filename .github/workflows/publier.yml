@@ -12,7 +12,11 @@ name: Publier sur GitHub Pages
 
 on:
   push:
-    branches: [principal]
+    # Les deux noms sont acceptes : la branche s'appelle « principal », mais
+    # GitHub suppose « main » un peu partout — notamment dans la regle de
+    # protection de l'environnement Pages. Si elle est renommee un jour, le
+    # workflow continuera de partir au lieu de se taire sans prevenir.
+    branches: [principal, main]
   # Permet aussi de republier a la main depuis l'onglet Actions.
   workflow_dispatch:
 
