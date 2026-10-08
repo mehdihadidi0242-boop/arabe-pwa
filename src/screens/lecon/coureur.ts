@@ -25,6 +25,7 @@ import {
 import { contientArabe, type Tolerance } from '../../domain/arabe';
 import { formaterIntervalle, intervalleSi } from '../../domain/sm2';
 import type { Card, Note } from '../../domain/types';
+import { petitBoutonEcouter } from '../../ui/bouton-ecouter';
 import { champArabe, type ChampArabe } from '../../ui/champ-arabe';
 import { el, remplacer } from '../../ui/dom';
 
@@ -35,6 +36,8 @@ export interface OptionsCoureur {
   surFin: (bilan: BilanCoureur) => void;
   /** Etiquette affichee au-dessus du compteur. */
   intitule: string;
+  /** Affiche un message a l'utilisateur, par exemple l'absence de voix. */
+  dire?: (message: string) => void;
 }
 
 export interface BilanCoureur {
@@ -189,27 +192,53 @@ export function monterCoureur(racine: HTMLElement, options: OptionsCoureur): voi
     );
   }
 
+  /**
+   * Enonce de l'exercice, accompagne d'un bouton d'ecoute des qu'il contient
+   * de l'arabe.
+   *
+   * On apprend souvent a prononcer en entendant d'abord, puis en lisant.
+   * Reserver l'ecoute a l'onglet « A voix haute » revenait a la retirer de
+   * l'endroit ou l'on passe le plus de temps.
+   */
   function enonce(exercice: Exercice): HTMLElement | null {
     if (exercice.type === 'trou') {
       const { avant, apres } = decouperTrou(exercice.enonce);
       return el(
-        'p',
-        { class: 'ar coureur__enonce', dir: 'rtl', lang: 'ar' },
-        el('span', { text: avant }),
-        el('span', { class: 'coureur__trou', text: '؟' }),
-        el('span', { text: apres }),
+        'div',
+        { class: 'coureur__ligne' },
+        el(
+          'p',
+          { class: 'ar coureur__enonce', dir: 'rtl', lang: 'ar' },
+          el('span', { text: avant }),
+          el('span', { class: 'coureur__trou', text: '؟' }),
+          el('span', { text: apres }),
+        ),
+        // On fait lire la phrase complete, trou compris par sa reponse : une
+        // phrase a trou lue telle quelle n'aurait aucun sens a l'oreille.
+        petitBoutonEcouter(
+          `${avant}${exercice.reponses[0] ?? ''}${apres}`.trim(),
+          options.dire,
+        ),
       );
     }
 
     if (exercice.enonce === '') return null;
 
     const arabe = contientArabe(exercice.enonce);
-    return el('p', {
+    const texte = el('p', {
       class: arabe ? 'ar coureur__enonce' : 'coureur__enonce coureur__enonce--fr',
       dir: arabe ? 'rtl' : 'ltr',
       lang: arabe ? 'ar' : 'fr',
       text: exercice.enonce,
     });
+
+    if (!arabe) return texte;
+    return el(
+      'div',
+      { class: 'coureur__ligne' },
+      texte,
+      petitBoutonEcouter(exercice.enonce, options.dire),
+    );
   }
 
   function zoneReponse(exercice: Exercice): HTMLElement {
@@ -218,8 +247,10 @@ export function monterCoureur(racine: HTMLElement, options: OptionsCoureur): voi
         return el(
           'div',
           { class: 'coureur__options', role: 'group', 'aria-label': 'Réponses possibles' },
-          ...exercice.options.map((option, index) =>
-            el('button', {
+          // Chaque proposition arabe peut etre ecoutee : choisir entre deux
+          // formes proches se fait autant a l'oreille qu'a l'oeil.
+          ...exercice.options.map((option, index) => {
+            const bouton = el('button', {
               type: 'button',
               class: `option ${reponse === index ? 'option--choisie' : ''} ${
                 contientArabe(option) ? 'ar' : ''
@@ -231,8 +262,16 @@ export function monterCoureur(racine: HTMLElement, options: OptionsCoureur): voi
                 reponse = index;
                 dessiner();
               },
-            }),
-          ),
+            });
+
+            if (!contientArabe(option)) return bouton;
+            return el(
+              'div',
+              { class: 'coureur__option-ligne' },
+              bouton,
+              petitBoutonEcouter(option, options.dire),
+            );
+          }),
         );
 
       case 'ordre':
@@ -373,18 +412,32 @@ export function monterCoureur(racine: HTMLElement, options: OptionsCoureur): voi
         class: 'resultat__verdict',
         text: r.correct ? 'Juste' : 'Faux',
       }),
-      !r.correct
+      // La bonne reponse s'ecoute, juste ou fausse : c'est le moment ou l'on
+      // veut entendre la forme correcte avant de la repeter.
+      contientArabe(r.attendue)
         ? el(
             'div',
             { class: 'resultat__attendu' },
-            el('span', { class: 'note', text: 'Réponse attendue' }),
-            el('span', {
-              class: contientArabe(r.attendue) ? 'ar resultat__reponse' : 'resultat__reponse',
-              dir: contientArabe(r.attendue) ? 'rtl' : 'ltr',
-              text: r.attendue,
-            }),
+            el('span', { class: 'note', text: r.correct ? 'Écouter' : 'Réponse attendue' }),
+            el(
+              'div',
+              { class: 'coureur__ligne' },
+              el('span', {
+                class: 'ar resultat__reponse',
+                dir: 'rtl',
+                text: r.attendue,
+              }),
+              petitBoutonEcouter(r.attendue, options.dire),
+            ),
           )
-        : null,
+        : !r.correct
+          ? el(
+              'div',
+              { class: 'resultat__attendu' },
+              el('span', { class: 'note', text: 'Réponse attendue' }),
+              el('span', { class: 'resultat__reponse', dir: 'ltr', text: r.attendue }),
+            )
+          : null,
       !r.correct && r.ecart ? el('p', { class: 'resultat__ecart', text: r.ecart }) : null,
       el('p', { class: 'resultat__explication', text: exercice.explication }),
     );

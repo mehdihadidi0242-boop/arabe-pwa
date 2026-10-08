@@ -14,6 +14,7 @@ import {
 } from '../../data/progres';
 import { PROGRAMME } from '../../data/lecons/index';
 import type { Exemple, Lecon, Section } from '../../data/lecons/types';
+import { afficherBandeau } from '../../ui/bandeau';
 import { petitBoutonEcouter } from '../../ui/bouton-ecouter';
 import { el, remplacer } from '../../ui/dom';
 import { monterCoureur, type BilanCoureur } from './coureur';
@@ -95,6 +96,7 @@ export async function vueJour(racine: HTMLElement, ctx: ContexteLecon): Promise<
       monterCoureur(zone, {
         exercices: lecon.exercices,
         intitule: lecon.titre,
+        dire: ctx.dire,
         surFin: async (resultat) => {
           bilan = resultat;
           await terminerLecon(lecon.id);
@@ -196,7 +198,7 @@ function sectionEnDom(section: Section): HTMLElement {
 }
 
 function exempleEnDom(exemple: Exemple): HTMLElement {
-  const ecoute = petitBoutonEcouter(exemple.ar);
+  const ecoute = petitBoutonEcouter(exemple.ar, afficherBandeau);
 
   return el(
     'div',

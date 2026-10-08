@@ -85,6 +85,7 @@ function lancer(racine: HTMLElement, exercices: Exercice[], ctx: ContexteLecon):
   monterCoureur(zone, {
     exercices,
     intitule: 'Révision',
+    dire: ctx.dire,
     surFin: (bilan) => {
       remplacer(
         zone,

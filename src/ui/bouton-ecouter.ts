@@ -60,26 +60,28 @@ export function boutonsEcouter(options: OptionsEcoute): BoutonsEcoute {
       return;
     }
 
-    if (!voixArabeDisponible()) {
-      racine.appendChild(
-        el('p', { class: 'note ecoute__absente', text: messageSansVoix() }),
-      );
-      return;
-    }
+    const muet = !voixArabeDisponible();
 
     racine.appendChild(
       el(
         'button',
         {
           type: 'button',
-          class: 'ecoute__bouton',
-          'aria-label': 'Écouter la phrase',
+          class: `ecoute__bouton ${muet ? 'ecoute__bouton--muet' : ''}`,
+          'aria-label': muet ? 'Écouter — aucune voix arabe installée' : 'Écouter la phrase',
           onClick: () => lire(VITESSES.normale),
         },
         icone(HAUT_PARLEUR, 20),
         el('span', { text: 'Écouter' }),
       ),
     );
+
+    if (muet) {
+      racine.appendChild(
+        el('p', { class: 'note ecoute__absente', text: messageSansVoix() }),
+      );
+      return;
+    }
 
     if (avecLent) {
       racine.appendChild(
@@ -105,18 +107,40 @@ export function boutonsEcouter(options: OptionsEcoute): BoutonsEcoute {
   return { element: racine, detacher: desabonner };
 }
 
-/** Petit bouton d'ecoute, pour accompagner un exemple dans une lecon. */
-export function petitBoutonEcouter(texte: string): HTMLElement | null {
-  if (!voixArabeDisponible()) return null;
-
-  return el(
+/**
+ * Petit bouton d'ecoute, a poser a cote de n'importe quel texte arabe.
+ *
+ * Il est affiche meme quand aucune voix n'est installee, et explique alors
+ * pourquoi il ne peut rien dire. Le masquer, comme je le faisais d'abord,
+ * laissait croire que l'application ne sait pas lire : on ne cherche pas une
+ * fonction dont on ignore l'existence.
+ */
+export function petitBoutonEcouter(
+  texte: string,
+  dire?: (message: string) => void,
+): HTMLElement {
+  const bouton = el(
     'button',
     {
       type: 'button',
       class: 'ecoute__petit',
       'aria-label': 'Écouter',
-      onClick: () => prononcer(texte),
+      onClick: () => {
+        if (!prononcer(texte)) dire?.(messageSansVoix());
+      },
     },
     icone(HAUT_PARLEUR, 16),
   );
+
+  const majEtat = () => {
+    const muet = !voixArabeDisponible();
+    bouton.classList.toggle('ecoute__petit--muet', muet);
+    bouton.setAttribute('aria-label', muet ? 'Écouter — aucune voix arabe installée' : 'Écouter');
+  };
+
+  // La liste des voix arrive en differe : l'etat se met a jour tout seul.
+  surVoixChangees(majEtat);
+  majEtat();
+
+  return bouton;
 }

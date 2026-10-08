@@ -1230,12 +1230,40 @@ button {
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: var(--cible);
+  height: var(--cible);
   border: 1px solid var(--line);
   border-radius: var(--r-pilule);
   background: var(--surface-2);
   color: var(--accent);
+}
+
+/* Aucune voix installee : le bouton reste visible et s'explique au toucher. */
+.ecoute__petit--muet,
+.ecoute__bouton--muet {
+  border-style: dashed;
+  color: var(--ink-2);
+  background: transparent;
+}
+
+.coureur__ligne {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.coureur__ligne .coureur__enonce {
+  flex-grow: 1;
+}
+
+.coureur__option-ligne {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.coureur__option-ligne .option {
+  flex-grow: 1;
 }
 
 .exemple__ligne {

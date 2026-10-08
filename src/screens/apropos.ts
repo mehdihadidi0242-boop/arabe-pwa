@@ -7,6 +7,7 @@
  */
 
 import type { Ecran } from '../app/ecran';
+import { etatHorsLigne, messageHorsLigne } from '../data/hors-ligne';
 import { etatStockage, formaterOctets } from '../data/stockage';
 import {
   analyser,
@@ -62,6 +63,7 @@ export function ecranAPropos(): Ecran {
     sousTitre: () => 'Sauvegarde, stockage et licences',
 
     async monter(racine: HTMLElement) {
+      const horsLigne = el('div', { class: 'carte' });
       const sauvegarde = el('div', { class: 'carte' });
       const stockage = el('div', { class: 'carte' });
       const voix = el('div', { class: 'carte' });
@@ -71,6 +73,7 @@ export function ecranAPropos(): Ecran {
         el(
           'section',
           { class: 'ecran', 'aria-label': 'À propos' },
+          horsLigne,
           sauvegarde,
           stockage,
           voix,
@@ -79,6 +82,7 @@ export function ecranAPropos(): Ecran {
         ),
       );
 
+      await dessinerHorsLigne(horsLigne);
       await dessinerSauvegarde(sauvegarde);
       await dessinerStockage(stockage);
       dessinerVoix(voix);
@@ -349,6 +353,49 @@ async function dessinerStockage(hote: HTMLElement): Promise<void> {
         }.`,
       }),
   );
+}
+
+/**
+ * Etat du mode hors connexion, en premiere carte.
+ *
+ * Tant qu'il n'etait affiche nulle part, « ça ne marche pas sans réseau »
+ * restait indiagnosticable : on ne savait pas distinguer un service worker
+ * absent d'un cache encore en train de se remplir.
+ */
+async function dessinerHorsLigne(hote: HTMLElement): Promise<void> {
+  const dessiner = async () => {
+    const etat = await etatHorsLigne();
+    const pret = etat.genre === 'pret';
+
+    remplacer(
+      hote,
+      el(
+        'div',
+        { class: 'recap__ligne' },
+        el('h2', { class: 'bloc__titre', text: 'Hors connexion' }),
+        el('span', {
+          class: `pastille ${pret ? 'pastille--fait' : 'pastille--en-cours'}`,
+          text: pret ? 'Prête' : etat.genre === 'installation' ? 'En cours' : 'Non installée',
+        }),
+      ),
+      el('p', { class: 'note', text: messageHorsLigne(etat) }),
+      pret
+        ? el('p', {
+            class: 'note',
+            text:
+              'Pour en avoir le cœur net : coupe le wifi et les données, puis relance ' +
+              'l’application. Elle doit s’ouvrir normalement.',
+          })
+        : el('button', {
+            type: 'button',
+            class: 'bouton bouton--secondaire bouton--compact',
+            text: 'Vérifier à nouveau',
+            onClick: () => void dessiner(),
+          }),
+    );
+  };
+
+  await dessiner();
 }
 
 /**
