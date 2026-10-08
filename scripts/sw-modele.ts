@@ -103,6 +103,11 @@ self.addEventListener('fetch', (evenement) => {
     return;
   }
 
+  // Le service worker ne se met jamais en cache lui-meme, ni au precache ni
+  // a l'execution. Une copie en cache resservirait indefiniment une version
+  // perimee a qui demande ce fichier, ce qui rend tout diagnostic trompeur.
+  if (new URL(requete.url).pathname.endsWith('/sw.js')) return;
+
   evenement.respondWith(
     (async () => {
       const cache = await caches.open(CACHE);

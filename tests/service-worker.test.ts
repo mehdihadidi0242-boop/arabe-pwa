@@ -157,4 +157,15 @@ describe('source generee', () => {
     expect(source).toContain("requete.method !== 'GET'");
     expect(source).toContain('self.location.origin');
   });
+
+  it('ne se met jamais en cache lui-meme, meme a l’execution', () => {
+    // Exclu du precache ET du cache d'execution. Une copie en cache
+    // resservirait indefiniment une version perimee du service worker a qui
+    // demande ce fichier — c'est arrive, et cela rendait le diagnostic
+    // trompeur pendant une mise au point.
+    expect(source).toContain("endsWith('/sw.js')");
+
+    const avantMiseEnCache = source.slice(0, source.indexOf('cache.put'));
+    expect(avantMiseEnCache).toContain("endsWith('/sw.js')");
+  });
 });
