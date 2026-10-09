@@ -101,7 +101,7 @@ export function boutonsEcouter(options: OptionsEcoute): BoutonsEcoute {
   }
 
   // La liste des voix arrive en differe : on redessine quand elle change.
-  const desabonner = surVoixChangees(dessiner);
+  const desabonner = surVoixChangees(dessiner, racine);
   dessiner();
 
   return { element: racine, detacher: desabonner };
@@ -138,8 +138,9 @@ export function petitBoutonEcouter(
     bouton.setAttribute('aria-label', muet ? 'Écouter — aucune voix arabe installée' : 'Écouter');
   };
 
-  // La liste des voix arrive en differe : l'etat se met a jour tout seul.
-  surVoixChangees(majEtat);
+  // La liste des voix arrive en differe, parfois longtemps apres : l'etat se
+  // met a jour tout seul. L'abonnement est lie au bouton et s'efface avec lui.
+  surVoixChangees(majEtat, bouton);
   majEtat();
 
   return bouton;
